@@ -19,22 +19,27 @@ class HomeController extends BaseController
         $this->articleRepository = $articleRepository;
     }
 
+    /**
+     * 查询热点文章/文章的作者
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index()
     {
         $cates = $this->categoryRepository
-            ->with(['Article' => function ($q){
-                $q->with(['Userinfo' => function ($u){
-                    $u->select('id','name');
-                }])
-                ->select('id','cate_id','user_id','title','desc')
+                ->select('id','name')
+                ->get()->toArray();
+        $articles = $this->articleRepository
+                    ->withCount(['Comment'])
+                    ->with(['Userinfo' => function ($u){
+                        $u->select('id','name','img_path');
+                    }])
                     ->where('status','=',1)
                     ->where('publish','=',1)
-                    ->orderBy('like','desc');
-            }])
-            ->all();
-        if(!$cates){
-            return response_failed('not any datas');
-        }
-        return response_success($cates->toArray());
+                    ->orderBy('like','desc')
+                    ->get()->toArray();
+
+        $arr['cate'] = $cates;
+        $arr['article'] = $articles;
+        return response_success($arr);
     }
 }
