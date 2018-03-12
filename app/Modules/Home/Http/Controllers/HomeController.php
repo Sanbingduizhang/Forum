@@ -25,6 +25,7 @@ class HomeController extends BaseController
      */
     public function index()
     {
+        header("Access-Control-Allow-Origin:*");
         $cates = $this->categoryRepository
                 ->select('id','name')
                 ->get()->toArray();
