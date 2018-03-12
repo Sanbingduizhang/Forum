@@ -12,7 +12,8 @@
 */
 
 Route::group(['prefix' => 'home'], function () {
-    Route::get('/', function () {
-        dd('This is the Home module index page. Build something great!');
+    Route::get('/index', 'HomeController@index');
+    Route::get('/', function (){
+        dd('这是home页面');
     });
 });
