@@ -27,6 +27,11 @@ class HomeController extends BaseController
     {
         header("Access-Control-Allow-Origin:*");
         $cates = $this->categoryRepository
+                ->with(['Article' => function ($a){
+                    $a->select('id','cate_id','title')
+                        ->orderBy('like','desc')
+                        ->limit(5);
+                }])
                 ->select('id','name')
                 ->get()->toArray();
         $articles = $this->articleRepository
