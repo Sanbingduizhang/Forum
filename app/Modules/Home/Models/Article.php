@@ -17,4 +17,8 @@ class Article extends Model
     {
         return $this->hasMany(Comment::class,'article_id','id');
     }
+    public function Cates()
+    {
+        return $this->belongsTo(Category::class,'cate_id','id');
+    }
 }

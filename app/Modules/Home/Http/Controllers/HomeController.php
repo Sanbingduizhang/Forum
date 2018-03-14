@@ -34,11 +34,14 @@ class HomeController extends BaseController
                     ->with(['Userinfo' => function ($u){
                         $u->select('id','name','img_path');
                     }])
+                    ->with(['Cates' =>function ($c){
+                        $c->select('id','name');
+                    }])
                     ->where('status','=',1)
                     ->where('publish','=',1)
                     ->orderBy('like','desc')
-                    ->get()->toArray();
-
+                    ->paginate(4)
+                    ->toArray();
         $arr['cate'] = $cates;
         $arr['article'] = $articles;
         return response_success($arr);
