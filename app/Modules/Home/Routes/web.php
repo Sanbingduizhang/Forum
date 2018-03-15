@@ -13,7 +13,14 @@
 
 Route::group(['prefix' => 'home'], function () {
     Route::get('/index', 'HomeController@index');
+    Route::get('/show/{id}', 'HomeController@show');
     Route::get('/', function (){
         dd('这是home页面');
+    });
+    Route::group(['prefix' => 'article'],function(){
+        Route::post('/create', 'ArticleController@create');
+        Route::get('/index/{id}', 'ArticleController@index');
+        Route::get('/show/{id}', 'ArticleController@show');
+        Route::post('/update/{id}', 'ArticleController@update');
     });
 });
