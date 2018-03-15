@@ -8,6 +8,10 @@ class Comment extends Model
 {
     //
     protected $table = 'comment';
-    protected $primaryKey = 'id';
+    protected $guarded = ['id'];
+    public function UserInfo()
+    {
+        return $this->belongsTo(Userinfo::class,'user_id','id');
+    }
 
 }

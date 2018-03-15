@@ -6,9 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Article extends Model
 {
-    //
+    const PUBLISH_ARTICLE_YES = 1;
+    const PUBLISH_ARTICLE_NO = 0;
+    const STATUS_ARTICLE_YES = 1;
+    const STATUS_ARTICLE_NO = 0;
     protected $table = 'article';
-    protected $primaryKey = 'id';
+    protected $guarded = ['id'];
     public function UserInfo()
     {
         return $this->belongsTo(Userinfo::class,'user_id','id');

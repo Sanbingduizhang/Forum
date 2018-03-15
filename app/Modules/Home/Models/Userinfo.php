@@ -9,5 +9,5 @@ class Userinfo extends Model
     //
     //
     protected $table = 'userinfo';
-    protected $primaryKey = 'id';
+    protected $guarded = ['id'];
 }

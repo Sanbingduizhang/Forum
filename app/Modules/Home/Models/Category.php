@@ -8,7 +8,7 @@ class Category extends Model
 {
     //
     protected $table = 'category';
-    protected $primaryKey = 'id';
+    protected $guarded = ['id'];
     public function Article()
     {
         return $this->hasMany(Article::class,'cate_id','id');
