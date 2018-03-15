@@ -56,6 +56,7 @@ class HomeController extends BaseController
         //查询所有分类
         $cates = $this->categoryRepository
                 ->select('id','name')
+                ->limit(6)
                 ->get()->toArray();
         //遍历分类id查询对应的前五个文章
         foreach ($cates as $key => $val){
@@ -76,6 +77,7 @@ class HomeController extends BaseController
                     ->orderBy('like','desc')
                     ->paginate(4)
                     ->toArray();
+        $articles = unsetye($articles);
         //整合数据
         $arr['cate'] = $cates;
         $arr['article'] = $articles;
