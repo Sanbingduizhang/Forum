@@ -24,6 +24,25 @@ if(!function_exists('generateTree'))
         return $tree;
     }
 }
+if(!function_exists('unsetye'))
+{
+    /**
+     * @param $data
+     * @return mixed
+     */
+    function unsetye($data) {
+        unset(
+            $data['first_page_url'],
+            $data['from'],
+            $data['last_page'],
+            $data['last_page_url'],
+            $data['path'],
+            $data['prev_page_url'],
+            $data['to'],
+            $data['next_page_url']);
+        return $data;
+    }
+}
 
 
 
