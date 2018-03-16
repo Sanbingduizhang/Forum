@@ -44,6 +44,15 @@ if(!function_exists('unsetye'))
     }
 }
 
+if(!function_exists('htmlHead'))
+{
+
+    function htmlHead() {
+
+        return header("Access-Control-Allow-Origin:http://public.com");
+    }
+}
+
 
 
 

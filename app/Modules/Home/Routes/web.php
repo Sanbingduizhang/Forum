@@ -20,7 +20,7 @@ Route::group(['prefix' => 'home'], function () {
     Route::group(['prefix' => 'article'],function(){
         Route::post('/create', 'ArticleController@create');
         Route::get('/uindex/{id}', 'ArticleController@uindex');
-        Route::get('/index/{id}','ArticleController@index');
+        Route::get('/index/{id?}','ArticleController@index');
         Route::get('/ushow/{id}', 'ArticleController@ushow');
         Route::post('/update/{id}', 'ArticleController@update');
         Route::post('/del/{id}', 'ArticleController@del');
