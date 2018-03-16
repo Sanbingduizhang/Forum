@@ -63,6 +63,7 @@ class ArticleController extends BaseController
     public function index(Request $request,$cateId = '')
     {
         htmlHead();
+        //查询有没有cateId传进来
         if($cateId){
             $cateId = (int)$cateId;
             $cateIdRes = $this->categoryRepository->find($cateId);
@@ -70,7 +71,7 @@ class ArticleController extends BaseController
                 return response_failed('cate is not exists');
             }
         }
-
+        //公用的查询
         $this->articleRepository = $this->articleRepository
             ->withCount(['Comment'])
             ->with(['UserInfo' => function($us){
@@ -78,7 +79,7 @@ class ArticleController extends BaseController
             }])
             ->where('status','=',Article::STATUS_ARTICLE_YES)
             ->where('publish','=',Article::PUBLISH_ARTICLE_YES);
-
+        //判断有没有cateId，如果没有，则认为是搜索功能
         if($cateId){
             $articleRes = $this->articleRepository
                 ->where(['cate_id' => $cateId])
@@ -90,11 +91,11 @@ class ArticleController extends BaseController
             $articleRes = $this->articleRepository
                 ->where('title','like',"%{$seaRes}%")
                 ->orwhere('desc','like',"%{$seaRes}%")
-                ->orwhere('title','like',"%{$seaRes}%")
                 ->orderBy('like','desc')
                 ->paginate(6)->toArray();
             $articleRes['cate_name'] = '搜索中....';
         }
+        //去除无用信息
         foreach ($articleRes['data'] as $k => $v){
             unset(
                 $articleRes['data'][$k]['status'],
@@ -110,7 +111,8 @@ class ArticleController extends BaseController
             $articleRes['articleRe'] = $res['articleRe'];
             $articleRes['articleRec'] = $res['articleRec'];
         }
-//        $articleRes = unsetye($articleRes);
+        //去除无用信息
+        $articleRes = unsetye($articleRes);
         if(!$articleRes){
             return response_success([]);
         }
