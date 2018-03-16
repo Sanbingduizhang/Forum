@@ -52,8 +52,8 @@ class HomeController extends BaseController
      */
     public function index()
     {
-        header("Access-Control-Allow-Origin:*");
-        //查询所有分类
+        htmlHead();
+        //查询前六条分类
         $cates = $this->categoryRepository
                 ->select('id','name')
                 ->limit(6)
@@ -91,6 +91,7 @@ class HomeController extends BaseController
      */
     public function show($id)
     {
+        htmlHead();
         //获取文章id并判断是否存在
         $id = (int)$id;
         $findRes = $this->articleRepository->find($id);

@@ -10,6 +10,7 @@ class Article extends Model
     const PUBLISH_ARTICLE_NO = 0;
     const STATUS_ARTICLE_YES = 1;
     const STATUS_ARTICLE_NO = 0;
+    const ISREC_ARTICLE_YES = 1;
     protected $table = 'article';
     protected $guarded = ['id'];
     public function UserInfo()
