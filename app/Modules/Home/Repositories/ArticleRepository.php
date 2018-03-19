@@ -26,12 +26,12 @@ class ArticleRepository extends BaseRepository
     public function articleAddRequest(Request $request)
     {
         $options = [
-            'user_id' => (int)$request->get('userId'),
             'title' => $request->get('title'),
             'desc' => $request->get('desc'),
             'content' => $request->get('content'),
             'cate_id' => (int)$request->get('cateId'),
             'publish' => (int)$request->get('publish'),
+            'wordsnum' => (int)$request->get('words'),
         ];
         return $options;
     }

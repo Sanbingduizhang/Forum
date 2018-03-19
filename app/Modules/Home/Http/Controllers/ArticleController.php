@@ -188,6 +188,7 @@ class ArticleController extends BaseController
         htmlHead();
         //获取数据
         $options = $this->articleRepository->articleAddRequest($request);
+        $options['user_id'] = (int)2;
         //查找是否有此分类
         $cateRes = $this->categoryRepository->find($options['cate_id']);
         if (!$cateRes) {
