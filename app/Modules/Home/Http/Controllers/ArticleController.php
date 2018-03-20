@@ -163,17 +163,19 @@ class ArticleController extends BaseController
             ->with(['Cates' => function ($c){
                 $c->select('id','name');
             }])
-            ->with(['Comment' => function ($co){
-                $co->with(['UserInfo' => function($u){
-                    $u->select('id','name');
-                }])
-                    ->select('id','article_id','user_id','content','likecount','created_at');
-            }])
-            ->select('id','title','desc','content','cate_id','like','user_id','updated_at')
+            ->withCount(['Comment'])
+            ->where('status','=',Article::STATUS_ARTICLE_YES)
+            ->where('publish','=',Article::PUBLISH_ARTICLE_YES)
             ->where(['id' => $id])
-            ->get()
-            ->toArray();
-            return response_success($articleRes);
+            ->first()->toArray();
+            unset(
+                $articleRes['user_id'],
+                $articleRes['cate_id'],
+                $articleRes['status'],
+                $articleRes['publish'],
+                $articleRes['created_at']
+            );
+        return response_success($articleRes);
     }
 
     /**
@@ -186,6 +188,7 @@ class ArticleController extends BaseController
         htmlHead();
         //获取数据
         $options = $this->articleRepository->articleAddRequest($request);
+        $options['user_id'] = (int)2;
         //查找是否有此分类
         $cateRes = $this->categoryRepository->find($options['cate_id']);
         if (!$cateRes) {
