@@ -25,6 +25,17 @@ class ArticleController extends BaseController
     }
 
     /**
+     * 请求分类
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function cate(){
+        htmlHead();
+        $cate = $this->categoryRepository
+            ->select('id','name')
+            ->get()->toArray();
+        return response_success($cate);
+    }
+    /**
      * 从其他页面跳转到文章列表页面请求
      * @return mixed
      */

@@ -18,10 +18,11 @@ Route::group(['prefix' => 'home'], function () {
         dd('这是home页面');
     });
     Route::group(['prefix' => 'article'],function(){
-        Route::post('/create', 'ArticleController@create');
         Route::get('/uindex/{id}', 'ArticleController@uindex');
         Route::get('/index/{id?}','ArticleController@index');
         Route::get('/ushow/{id}', 'ArticleController@ushow');
+        Route::get('/cate', 'ArticleController@cate');
+        Route::post('/create', 'ArticleController@create');
         Route::post('/update/{id}', 'ArticleController@update');
         Route::post('/del/{id}', 'ArticleController@del');
     });
