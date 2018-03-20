@@ -74,6 +74,7 @@ class HomeController extends BaseController
                     }])
                     ->where('status','=',Article::STATUS_ARTICLE_YES)
                     ->where('publish','=',Article::PUBLISH_ARTICLE_YES)
+                    ->orderBy('updated_at','desc')
                     ->orderBy('like','desc')
                     ->paginate(4)
                     ->toArray();

@@ -13,5 +13,5 @@
 
 Route::group(['prefix' => 'admin'], function () {
     Route::post('/login','LoginController@login');
-    Route::get('/index', 'AdminController@index');
+    Route::get('/index/{cateId?}', 'AdminController@index');
 });
