@@ -175,6 +175,7 @@ class ArticleController extends BaseController
                 $articleRes['publish'],
                 $articleRes['created_at']
             );
+        $articleRes['content'] = file_get_contents($articleRes['content']);
         return response_success($articleRes);
     }
 
@@ -188,12 +189,15 @@ class ArticleController extends BaseController
         htmlHead();
         //获取数据
         $options = $this->articleRepository->articleAddRequest($request);
-        $options['user_id'] = (int)2;
+        $options['user_id'] = 2;
         //查找是否有此分类
         $cateRes = $this->categoryRepository->find($options['cate_id']);
         if (!$cateRes) {
             return response_failed('not exist');
         }
+        $url = "/file/" . $options['cate_id'] . $options['user_id'] . strtotime(date(now())) . uniqid() . '.doc';
+        file_put_contents($url,$options['content']);
+        $options['content'] = $url;
         //添加数据到article表中
         $res = $this->articleRepository->create($options);
         if($res){
