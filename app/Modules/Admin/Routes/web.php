@@ -14,4 +14,8 @@
 Route::group(['prefix' => 'admin'], function () {
     Route::post('/login','LoginController@login');
     Route::get('/index/{cateId?}', 'AdminController@index');
+    Route::get('/show/{id}', 'AdminController@show');
+    Route::get('/del/{id}', 'AdminController@del');
+    Route::post('/update/{id}', 'AdminController@update');
+    Route::post('/create', 'AdminController@create');
 });
