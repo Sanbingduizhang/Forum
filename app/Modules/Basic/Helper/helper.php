@@ -49,7 +49,7 @@ if(!function_exists('htmlHead'))
 
     function htmlHead() {
 
-        return header("Access-Control-Allow-Origin:http://www.heijiang.top");
+        return header("Access-Control-Allow-Origin:http://blog.heijiang.top");
     }
 }
 
