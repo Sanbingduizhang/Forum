@@ -26,4 +26,9 @@ Route::group(['prefix' => 'home'], function () {
         Route::post('/update/{id}', 'ArticleController@update');
         Route::post('/del/{id}', 'ArticleController@del');
     });
+    Route::group(['prefix' => 'photo'],function(){
+
+//        Route::options('/uploads', 'PhotoController@uploads');
+        Route::post('/uploads', 'PhotoController@uploads');
+    });
 });
