@@ -150,3 +150,41 @@ if (!function_exists('load_module_helpers')) {
         App\Modules\Basic\Support\Helper::loadModuleHelpers($dir);
     }
 }
+
+
+if (!function_exists('uploadsImg')) {
+    function uploadsImg($request,$arr)
+    {
+        $option = $arr;             //['jpg','png','jpeg','gif']
+        //判断文件是否上传成功
+        if(!($request->hasFile('photo') && $request->file('photo'))){
+
+            return response_failed('Error in the process of uploading files or uploading');
+        }
+        //获取上传文件
+        $file = $request->file('photo');
+        $ext = strtolower($file->getClientOriginalExtension()); //文件扩展名
+        $originName = strtolower($file->getClientOriginalName());  //文件原名
+        $type = $file->getClientMimeType();     // image/jpeg(真实文件名称)
+        //判断文件类型是否符合
+        if(!in_array($ext,$option)){
+
+            return  -1; //'Please upload the specified type of picture:jpg,png,jpeg,gif';
+        }
+        //替换后的文件名称及路径
+//        $course['img_path'] ? pathinfo($course['img_path'], PATHINFO_FILENAME) . '.' . $ext : '';
+        $path1 = date('YmdHis') . '-' . uniqid() . '.' . $ext;
+        $filesave = $file->storeAs('uploads', $path1,'uploads');
+        if(!$filesave) {
+            return -2;   //'save is failed';
+        }
+
+        return $options = [
+            'ext' => $ext,
+            'originName' => $originName,
+            'path' => '/photo/uploads/' . $path1,
+            'name' => $path1,
+            'type' => $type,
+        ];
+    }
+}

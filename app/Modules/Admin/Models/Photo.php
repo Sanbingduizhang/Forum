@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Modules\Home\Models;
+namespace App\Modules\Admin\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
 class Photo extends Model
 {
-    //
     protected $table = 'photo';
     protected $guarded = ['id'];
     public function photoCate()
@@ -15,6 +14,6 @@ class Photo extends Model
     }
     public function User()
     {
-        return $this->belongsTo(Userinfo::class,'userid','id');
+        return $this->belongsTo(User::class,'userid','id');
     }
 }
