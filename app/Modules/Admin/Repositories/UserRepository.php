@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Modules\Home\Repositories;
+namespace App\Modules\Admin\Repositories;
 
 use App\Modules\Admin\Models\User;
 use App\Modules\Basic\Repositories\BaseRepository;
-use App\Modules\Home\Models\Article;
 use Illuminate\Http\Request;
 
 
@@ -23,16 +22,13 @@ class UserRepository extends BaseRepository
      * @param Request $request
      * @return array
      */
-    public function articleAddRequest(Request $request)
+    public function userLoginRequest(Request $request)
     {
         $options = [
-            'user_id' => (int)$request->get('userId'),
-            'title' => $request->get('title'),
-            'desc' => $request->get('desc'),
-            'content' => $request->get('content'),
-            'cate_id' => (int)$request->get('cateId'),
-            'publish' => (int)$request->get('publish'),
+            'uname' => trim($request->get('uname',null)),
+            'pwd' => md5(trim($request->get('pwd',null))),
         ];
+
         return $options;
     }
 }
