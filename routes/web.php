@@ -11,6 +11,6 @@
 |
 */
 
-Route::get('/', function () {
-    dd('这是起始页面');
-});
+//Route::get('/', function () {
+//    dd('这是起始页面');
+//});

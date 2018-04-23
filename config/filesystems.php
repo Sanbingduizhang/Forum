@@ -64,6 +64,15 @@ return [
             'url' => env('AWS_URL'),
         ],
 
+        // 新建一个本地端uploads空间（目录） 用于存储上传的文件
+        'uploads' => [
+            'driver' => 'local',
+            // 文件将上传到storage/app/uploads目录
+            'root' => '../../../photo',
+            // 文件将上传到public/uploads目录
+            //'root' => public_path('uploads'),
+        ],
+
     ],
 
 ];
