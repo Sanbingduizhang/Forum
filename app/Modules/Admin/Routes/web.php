@@ -20,4 +20,17 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('/del/{id}', 'AdminController@del');
     Route::post('/update/{id}', 'AdminController@update');
     Route::post('/create', 'AdminController@create');
+    //相册部分
+    Route::group(['prefix' => 'photo'],function(){
+        //上传
+       Route::post('/uploadImg/{id}','PhotoController@uploadImg');
+       //显示
+       Route::get('/index','PhotoController@index');
+       Route::get('/show/{id}','PhotoController@show');
+       //相册操作
+       Route::get('/pindex','PhotoController@iPhoto');
+       Route::post('/pCreate','PhotoController@createPhoto');
+       Route::post('/pUpdate/{id}','PhotoController@updatePhoto');
+       //Route::get('/pdel/{id}','PhotoController@delPhoto');              //暂不使用
+    });
 });
