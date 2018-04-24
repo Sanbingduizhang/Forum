@@ -68,7 +68,7 @@ return [
         'uploads' => [
             'driver' => 'local',
             // 文件将上传到storage/app/uploads目录
-            'root' => '../../../photo',
+            'root' => '/photo',
             // 文件将上传到public/uploads目录
             //'root' => public_path('uploads'),
         ],
