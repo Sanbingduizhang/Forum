@@ -182,7 +182,7 @@ if (!function_exists('uploadsImg')) {
         return $options = [
             'ext' => $ext,
             'originName' => $originName,
-            'path' => '/photo/uploads/' . $path1,
+            'path' => 'photo.heijiang.top/uploads/' . $path1,
             'name' => $path1,
             'type' => $type,
         ];
