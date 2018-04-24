@@ -37,16 +37,19 @@ class PhotoController extends BaseController
             }])
 //            ->select('id','pname','use_id')
             ->where(['del' => 0,'use_id' => 1])
-            ->get()->toArray();
+            ->orderBy('created_at','desc')
+            ->paginate(8)
+            ->toArray();
         if(!$findRes){
 
             return response_success([]);
         }
-        foreach ($findRes as $k => $v) {
+        foreach ($findRes['data'] as $k => $v) {
             if ($v['photo']) {
-                $findRes[$k]['photo'] = $v['photo'][0];
+                $findRes['data'][$k]['photo'] = $v['photo'][0];
             }
         }
+        $findRes = unsetye($findRes);
         return response_success($findRes);
     }
 
