@@ -83,6 +83,9 @@ class PhotoController extends BaseController
         if('' == $option['pname']) {
             return response_failed('相册名称不能为空');              //相册名称不为空
         }
+        if(3 > strlen($option['pname']) || 10 < strlen($option['pname'])) {
+            return response_failed('相册名称大于三个且小于10个');
+        }
         $option['use_id'] = 1;
         $createRes = $this->photoCateRepository->create($option);
         if($createRes){

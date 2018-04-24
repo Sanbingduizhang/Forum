@@ -26,7 +26,9 @@ class PhotoCateRepository extends BaseRepository
     public function pNewCateRequest(Request $request)
     {
         $options = [
-            'pname' => $request->get('name',''),
+            'pname' => $request->get('pname',''),
+            'status' => $request->get('status',1),
+            'share' => $request->get('share',1),
         ];
         return $options;
     }
