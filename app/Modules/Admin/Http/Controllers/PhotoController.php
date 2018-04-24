@@ -33,15 +33,21 @@ class PhotoController extends BaseController
             }])
             ->withCount(['Photo'])
             ->with(['Photo' => function($p){
-                $p->select('id','cate_id','img_path','img_name')->limit(1);
+                $p->select('id','cate_id','img_path','img_name');
             }])
 //            ->select('id','pname','use_id')
             ->where(['del' => 0,'use_id' => 1])
             ->get()->toArray();
-        if($findRes){
-            return response_success($findRes);
+        if(!$findRes){
+
+            return response_success([]);
         }
-        return response_success([]);
+        foreach ($findRes as $k => $v) {
+            if ($v['photo']) {
+                $findRes[$k]['photo'] = $v['photo'][0];
+            }
+        }
+        return response_success($findRes);
     }
 
     /**
@@ -83,7 +89,7 @@ class PhotoController extends BaseController
         if('' == $option['pname']) {
             return response_failed('相册名称不能为空');              //相册名称不为空
         }
-        if(3 > strlen($option['pname']) || 10 < strlen($option['pname'])) {
+        if(3 > mb_strlen($option['pname']) || 10 < mb_strlen($option['pname'])) {
             return response_failed('相册名称大于三个且小于10个');
         }
         $option['use_id'] = 1;
