@@ -73,11 +73,12 @@ class PhotoController extends BaseController
             }])
             ->select('id','cate_id','userid','img_path','img_name')
             ->where(['cate_id' => $id,'userid' => 1])
-            ->get()->toArray();
-        if($photoRes) {
-            return response_success($photoRes);
+            ->paignate(8)->toArray();
+        if(!$photoRes) {
+            return response_success([]);
         }
-        return response_failed('no datas');
+        $photoRes = unsetye($photoRes);
+        return response_success($photoRes);
     }
 
     /**
