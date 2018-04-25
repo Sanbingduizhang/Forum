@@ -72,7 +72,7 @@ class PhotoController extends BaseController
                 $u->select('id','name');
             }])
             ->select('id','cate_id','userid','img_path','img_name')
-            ->where(['cate_id' => $id,'use_id' => 1])
+            ->where(['cate_id' => $id,'userid' => 1])
             ->get()->toArray();
         if($photoRes) {
             return response_success($photoRes);
@@ -174,7 +174,7 @@ class PhotoController extends BaseController
         //如果上传成功就进行数据插入
         $photoSave = $this->photoRepository->create([
             'cate_id' => $id,
-            'userid' => 2,
+            'userid' => 1,
             'img_path' => $uploadRes['path'],
             'img_name' => $uploadRes['name'],
             'img_origin' => $uploadRes['originName'],
