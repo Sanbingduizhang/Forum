@@ -79,9 +79,12 @@ class PhotoController extends Controller
 
             return response_success([]);
         }
-        $photoRes = unsetye($photoRes);
+        $returnArray['res'] = unsetye($photoRes);
+        $returnArray['username'] = $cateRes->User->name;
+        $returnArray['userimg'] = $cateRes->User->img_path;
+        $returnArray['photoname'] = $cateRes->pname;
 
-        return response_success($photoRes);
+        return response_success($returnArray);
     }
     /**
      * 上传单个图片
