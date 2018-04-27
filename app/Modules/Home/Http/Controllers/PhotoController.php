@@ -73,7 +73,7 @@ class PhotoController extends Controller
             }])
             ->select('id','cate_id','userid','img_path','img_name')
             ->where(['cate_id' => $id])
-            ->paginate(9)
+            ->paginate(12)
             ->toArray();
         if(!$photoRes){
 
