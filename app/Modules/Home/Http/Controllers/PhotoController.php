@@ -79,10 +79,12 @@ class PhotoController extends Controller
 
             return response_success([]);
         }
+        //把相册名称，对应作者信息放上去
         $returnArray['res'] = unsetye($photoRes);
         $returnArray['username'] = $cateRes->User->name;
         $returnArray['userimg'] = $cateRes->User->img_path;
         $returnArray['photoname'] = $cateRes->pname;
+        $returnArray['phototime'] = $cateRes->toArray()['created_at'];
 
         return response_success($returnArray);
     }
