@@ -71,7 +71,7 @@ class PhotoController extends Controller
             ->with(['User' => function($u){
                 $u->select('id','name');
             }])
-            ->select('id','cate_id','userid','img_path','img_name')
+            ->select('id','cate_id','userid','img_thumb','img_path','img_name','likecount','created_at')
             ->where(['cate_id' => $id])
             ->paginate(12)
             ->toArray();
@@ -85,6 +85,71 @@ class PhotoController extends Controller
         $returnArray['userimg'] = $cateRes->User->img_path;
         $returnArray['photoname'] = $cateRes->pname;
         $returnArray['phototime'] = $cateRes->toArray()['created_at'];
+
+        return response_success($returnArray);
+    }
+
+    public function imgComment(Request $request)
+    {
+        htmlHead();
+        $photoId = $request->get('photoid',null);
+        $imgId = $request->get('imgid',null);
+        if(empty($photoId) || empty($imgId)) {
+
+            return response_failed('参数传递有误');
+        }
+        //'cate' => 2 代表图片评论
+        $photoComment = $this->photoRepository
+            ->withCount(['Comment' => function ($cc){
+                $cc->where(['cate' => 2]);
+            }])
+            ->with(['Comment' => function ($c){
+                $c->withCount(['Reply'])->where(['cate' => 2]);
+            }])
+            ->where(['id' => $imgId,'cate_id' => $photoId])
+            ->get()
+            ->toArray();
+        dd($photoComment);
+
+    }
+
+    /**
+     * 显示单个图片的所有信息
+     * @param $photoId
+     * @param $imgId
+     * @return \Illuminate\Http\JsonResponse
+     * 暂不使用
+     */
+    public function showImg(Request $request)
+    {
+        htmlHead();
+        $photoId = $request->get('photoid',null);
+        $imgId = $request->get('imgid',null);
+        if(empty($photoId) || empty($imgId)) {
+
+            return response_failed('参数传递有误');
+        }
+        $cateRes = $this->photoCateRepository
+            ->where(['id' => $photoId,'status' => 1,'share' => 1,'del' => 0])
+            ->first();
+        if(!$cateRes) {
+            return response_failed('数据有误');
+        }
+        $photoRes = $this->photoRepository
+            ->with(['User' => function($u){
+                $u->select('id','name');
+            }])
+            ->select('id','cate_id','userid','img_path','img_name','likecount','created_at')
+            ->where(['id' => $imgId,'cate_id' => $photoId])
+            ->get()
+            ->toArray();
+        if(!$photoRes){
+
+            return response_success([]);
+        }
+        //把相册名称，对应作者信息放上去
+        $returnArray['res'] = $photoRes;
+        $returnArray['photoname'] = $cateRes->pname;
 
         return response_success($returnArray);
     }
