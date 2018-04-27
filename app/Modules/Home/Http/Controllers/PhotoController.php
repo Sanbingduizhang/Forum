@@ -42,11 +42,15 @@ class PhotoController extends Controller
             }])
 //            ->select('id','pname','use_id')
             ->where(['status' => 1,'share' => 1,'del' => 0])
-            ->get()->toArray();
-        if($findRes){
-            return response_success($findRes);
+            ->paginate(9)
+            ->toArray();
+        if(!$findRes){
+
+            return response_success([]);
         }
-        return response_success([]);
+        $findRes = unsetye($findRes);
+
+        return response_success($findRes);
     }
 
     /**
@@ -69,11 +73,15 @@ class PhotoController extends Controller
             }])
             ->select('id','cate_id','userid','img_path','img_name')
             ->where(['cate_id' => $id])
-            ->get()->toArray();
-        if($photoRes) {
-            return response_success($photoRes);
+            ->paginate(9)
+            ->toArray();
+        if(!$photoRes){
+
+            return response_success([]);
         }
-        return response_failed('no datas');
+        $photoRes = unsetye($photoRes);
+
+        return response_success($photoRes);
     }
     /**
      * 上传单个图片
