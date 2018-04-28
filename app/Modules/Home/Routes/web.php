@@ -32,5 +32,7 @@ Route::group(['prefix' => 'home'], function () {
         Route::post('/uploads', 'PhotoController@uploads');
         Route::get('/index', 'PhotoController@index');
         Route::get('/show/{id}', 'PhotoController@show');
+        Route::get('/showImg', 'PhotoController@showImg');
+        Route::get('/imgComment', 'PhotoController@imgComment');
     });
 });
