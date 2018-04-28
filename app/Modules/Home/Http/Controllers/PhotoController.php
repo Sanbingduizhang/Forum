@@ -89,6 +89,11 @@ class PhotoController extends Controller
         return response_success($returnArray);
     }
 
+    /**
+     * 单个图片的评论
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function imgComment(Request $request)
     {
         htmlHead();
@@ -104,7 +109,8 @@ class PhotoController extends Controller
                 $cc->where(['cate' => 2]);
             }])
             ->with(['Comment' => function ($c){
-                $c->withCount(['Reply'])->where(['cate' => 2]);
+                $c->withCount(['Reply'])
+                    ->where(['cate' => 2]);
             }])
             ->where(['id' => $imgId,'cate_id' => $photoId])
             ->get()
