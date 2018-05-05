@@ -33,6 +33,8 @@ Route::group(['prefix' => 'home'], function () {
         Route::get('/index', 'PhotoController@index');
         Route::get('/show/{id}', 'PhotoController@show');
         Route::get('/showImg', 'PhotoController@showImg');
+        //评论综合
         Route::get('/imgComment', 'PhotoController@imgComment');
+        Route::get('/imgReply', 'PhotoController@imgReply');
     });
 });
