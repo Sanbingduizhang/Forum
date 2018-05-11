@@ -3,8 +3,10 @@
 namespace App\Modules\Home\Http\Controllers;
 
 use App\Modules\Home\Repositories\CategoryRepository;
+use App\Modules\Home\Repositories\CommentRepository;
 use App\Modules\Home\Repositories\PhotoCateRepository;
 use App\Modules\Home\Repositories\PhotoRepository;
+use App\Modules\Home\Repositories\ReplyRepository;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
@@ -15,14 +17,21 @@ class PhotoController extends Controller
     protected $photoRepository;
     protected $categoryRepository;
     protected $photoCateRepository;
+    protected $commentRepository;
+    protected $replyRepository;
+
     public function __construct(
         PhotoRepository $photoRepository,
         CategoryRepository $categoryRepository,
-        PhotoCateRepository $photoCateRepository)
+        PhotoCateRepository $photoCateRepository,
+        CommentRepository$commentRepository,
+        ReplyRepository $replyRepository)
     {
         $this->photoRepository = $photoRepository;
         $this->categoryRepository = $categoryRepository;
         $this->photoCateRepository = $photoCateRepository;
+        $this->commentRepository = $commentRepository;
+        $this->replyRepository = $replyRepository;
     }
 
     /**
@@ -104,18 +113,62 @@ class PhotoController extends Controller
             return response_failed('参数传递有误');
         }
         //'cate' => 2 代表图片评论
-        $photoComment = $this->photoRepository
-            ->withCount(['Comment' => function ($cc){
-                $cc->where(['cate' => 2]);
-            }])
-            ->with(['Comment' => function ($c){
-                $c->withCount(['Reply'])
-                    ->where(['cate' => 2]);
-            }])
+        //查询是否存在此图片
+        $photoExist = $this->photoRepository
             ->where(['id' => $imgId,'cate_id' => $photoId])
+            ->first();
+        if(!$photoExist) {
+
+            return response_failed('数据有误');
+        }
+        //获取对应图片的评论以及回复
+        $photoComment = $this->commentRepository
+            ->with(['UserInfo' => function($u){
+                $u->select('id','name');
+            }])
+            ->withCount(['Reply'])
+            ->where(['cate' => 2,'article_id' => $imgId])
+            ->paginate(10)
+            ->toArray();
+        //如果查询不到,则返回空数组
+        if(!$photoComment) {
+
+            return response_success([]);
+        }
+        //去除分页多余信息
+        $photoComment = unsetye($photoComment);
+
+        return response_success($photoComment);
+    }
+    public function imgReply(Request $request)
+    {
+        htmlHead();
+        $imgId = $request->get('imgid',null);
+        $commentId = $request->get('commentid',null);
+        if(empty($commentId) || empty($imgId)) {
+
+            return response_failed('参数传递有误');
+        }
+        //'cate' => 2 代表图片评论
+        //查询是否存在此图片
+        $commentExist = $this->commentRepository
+            ->where(['id' => $commentId,'article_id' => $imgId,'cate' => 2])
+            ->first();
+        if(!$commentExist) {
+
+            return response_failed('数据有误');
+        }
+        //如果存在，则查询评论对应的所有回复
+        $replyDatas = $this->replyRepository
+            ->where(['comment_id' => $commentId])
             ->get()
             ->toArray();
-        dd($photoComment);
+        if(!$replyDatas) {
+
+            return response_success([]);
+        }
+
+        return response_success($replyDatas);
 
     }
 
@@ -135,12 +188,15 @@ class PhotoController extends Controller
 
             return response_failed('参数传递有误');
         }
+        //判断是否存在数据
         $cateRes = $this->photoCateRepository
             ->where(['id' => $photoId,'status' => 1,'share' => 1,'del' => 0])
             ->first();
+        //如果不存在
         if(!$cateRes) {
             return response_failed('数据有误');
         }
+        //如果存在，则查询所有数据
         $photoRes = $this->photoRepository
             ->with(['User' => function($u){
                 $u->select('id','name');
@@ -159,8 +215,10 @@ class PhotoController extends Controller
 
         return response_success($returnArray);
     }
+
     /**
      * 上传单个图片
+     * 暂时不启用
      * /photo/uploads/图片名称
      * @param Request $request
      * @param $id
