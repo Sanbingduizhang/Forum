@@ -108,6 +108,8 @@ class PhotoController extends Controller
         htmlHead();
         $photoId = $request->get('photoid',null);
         $imgId = $request->get('imgid',null);
+        //是否是直接显示评论（或者显示所有评论）
+        $more = $request->get('more',false);
         if(empty($photoId) || empty($imgId)) {
 
             return response_failed('参数传递有误');
@@ -121,15 +123,25 @@ class PhotoController extends Controller
 
             return response_failed('数据有误');
         }
-        //获取对应图片的评论以及回复
-        $photoComment = $this->commentRepository
-            ->with(['UserInfo' => function($u){
-                $u->select('id','name');
-            }])
-            ->withCount(['Reply'])
-            ->where(['cate' => 2,'article_id' => $imgId])
-            ->paginate(10)
-            ->toArray();
+        //如果传递more，则认为查询所有评论数据（一次性返回，否则，只显示四条评论）
+        if($more){
+            $photoComment = $this->commentRepository
+                ->with(['UserInfo' => function($u){
+                    $u->select('id','name');
+                }])
+                ->withCount(['Reply'])
+                ->where(['cate' => 2,'article_id' => $imgId])
+                ->toArray();
+        } else {
+            $photoComment = $this->commentRepository
+                ->with(['UserInfo' => function($u){
+                    $u->select('id','name');
+                }])
+                ->withCount(['Reply'])
+                ->where(['cate' => 2,'article_id' => $imgId])
+                ->paginate(5)
+                ->toArray();
+        }
         //如果查询不到,则返回空数组
         if(!$photoComment) {
 
@@ -140,11 +152,18 @@ class PhotoController extends Controller
 
         return response_success($photoComment);
     }
+
+    /**
+     * 单个图片的某条评论下方的所有回复
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function imgReply(Request $request)
     {
         htmlHead();
         $imgId = $request->get('imgid',null);
         $commentId = $request->get('commentid',null);
+        $more = $request->get('more',false);
         if(empty($commentId) || empty($imgId)) {
 
             return response_failed('参数传递有误');
@@ -158,11 +177,20 @@ class PhotoController extends Controller
 
             return response_failed('数据有误');
         }
-        //如果存在，则查询评论对应的所有回复
-        $replyDatas = $this->replyRepository
-            ->where(['comment_id' => $commentId])
-            ->get()
-            ->toArray();
+        //如果传递more为true，则认为是查询所有回复
+        if($more){
+            //如果存在，则查询评论对应的所有回复
+            $replyDatas = $this->replyRepository
+                ->where(['comment_id' => $commentId])
+                ->get()
+                ->toArray();
+        } else{
+            $replyDatas = $this->replyRepository
+                ->where(['comment_id' => $commentId])
+                ->paginate(3)
+                ->toArray();
+        }
+
         if(!$replyDatas) {
 
             return response_success([]);
