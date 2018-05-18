@@ -34,7 +34,19 @@ Route::group(['prefix' => 'home'], function () {
         Route::get('/show/{id}', 'PhotoController@show');
         Route::get('/showImg', 'PhotoController@showImg');
         //评论综合
-        Route::get('/imgComment', 'PhotoController@imgComment');
-        Route::get('/imgReply', 'PhotoController@imgReply');
+//        Route::get('/imgComment', 'PhotoController@imgComment');
+//        Route::get('/imgReply', 'PhotoController@imgReply');
+    });
+    Route::group(['prefix' => 'comment'],function(){
+        //评论综合
+        Route::get('/imgComment', 'CommentController@imgComment');
+        Route::get('/imgReply', 'CommentController@imgReply');
+        //评论操作
+        Route::post('/comAdd', 'CommentController@comAdd');
+        Route::get('/comDel/id/{id}/cate/{cate}', 'CommentController@comDel');
+        //回复操作
+        Route::post('/comRepAdd', 'CommentController@comRepAdd');
+        Route::post('/repRepAdd', 'CommentController@repRepAdd');
+        Route::get('/repDel/id/{id}', 'CommentController@repDel');
     });
 });
