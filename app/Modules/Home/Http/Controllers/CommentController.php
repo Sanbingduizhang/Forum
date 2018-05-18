@@ -38,9 +38,9 @@ class CommentController extends BaseController
     public function imgComment(Request $request)
     {
         htmlHead();
-        $photoId = $request->get('photoid',null);
-        $imgId = $request->get('imgid',null);
-        $cate = $request->get('cate',null);
+        $photoId = (int)$request->get('photoid',null);
+        $imgId = (int)$request->get('imgid',null);
+        $cate = (int)$request->get('cate',null);
         //是否是直接显示评论（或者显示所有评论）
         $more = $request->get('more',false);
         if(empty($photoId) || empty($imgId) || empty($cate)) {
@@ -145,7 +145,7 @@ class CommentController extends BaseController
         htmlHead();
         $userid = 2;    //获取用户的id，暂时写定
         $options = $this->commentRepository->addComRequest($request);
-        if ('' == $options['content'] || '' == $options['article_id'] || '' == $options['cate']) {
+        if ('' == trim($options['content']) || '' == $options['article_id'] || '' == $options['cate']) {
             return response_failed('参数传递错误');
         }
         $options['user_id'] = $userid;
