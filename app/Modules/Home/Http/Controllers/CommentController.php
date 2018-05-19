@@ -64,6 +64,8 @@ class CommentController extends BaseController
                 }])
                 ->withCount(['Reply'])
                 ->where(['cate' => $cate,'article_id' => $imgId])
+                ->orderBy('likecount','desc')
+                ->orderBy('created_at','desc')
                 ->toArray();
         } else {
             $photoComment = $this->commentRepository
@@ -72,6 +74,8 @@ class CommentController extends BaseController
                 }])
                 ->withCount(['Reply'])
                 ->where(['cate' => $cate,'article_id' => $imgId])
+                ->orderBy('likecount','desc')
+                ->orderBy('created_at','desc')
                 ->paginate(5)
                 ->toArray();
         }
