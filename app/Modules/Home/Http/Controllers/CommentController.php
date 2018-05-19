@@ -66,7 +66,9 @@ class CommentController extends BaseController
                 ->where(['cate' => $cate,'article_id' => $imgId])
                 ->orderBy('likecount','desc')
                 ->orderBy('created_at','desc')
+                ->get()
                 ->toArray();
+            $photoComment['more'] = 1;
         } else {
             $photoComment = $this->commentRepository
                 ->with(['UserInfo' => function($u){
@@ -78,6 +80,7 @@ class CommentController extends BaseController
                 ->orderBy('created_at','desc')
                 ->paginate(5)
                 ->toArray();
+            $photoComment['more'] = -1;
         }
         //如果查询不到,则返回空数组
         if(!$photoComment) {
