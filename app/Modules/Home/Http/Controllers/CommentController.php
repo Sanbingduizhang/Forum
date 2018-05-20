@@ -5,6 +5,7 @@ namespace App\Modules\Home\Http\Controllers;
 use App\Modules\Basic\Http\Controllers\BaseController;
 use App\Modules\Home\Repositories\ArticleRepository;
 use App\Modules\Home\Repositories\CommentRepository;
+use App\Modules\Home\Repositories\LikeCountRepository;
 use App\Modules\Home\Repositories\PhotoRepository;
 use App\Modules\Home\Repositories\ReplyRepository;
 use Illuminate\Http\Request;
@@ -16,11 +17,13 @@ class CommentController extends BaseController
     protected $articleRepository;
     protected $photoRepository;
     protected $replyRepository;
+    protected $likeCountRepository;
     public function __construct(
         CommentRepository $commentRepository,
         ArticleRepository $articleRepository,
         PhotoRepository $photoRepository,
-        ReplyRepository $replyRepository
+        ReplyRepository $replyRepository,
+        LikeCountRepository $likeCountRepository
 
     )
     {
@@ -29,6 +32,7 @@ class CommentController extends BaseController
         $this->articleRepository = $articleRepository;
         $this->photoRepository = $photoRepository;
         $this->replyRepository = $replyRepository;
+        $this->likeCountRepository = $likeCountRepository;
     }
     /**
      * 单个图片的评论
@@ -305,6 +309,83 @@ class CommentController extends BaseController
             return response_success(['message' => '删除回复成功']);
         }
         return response_failed('删除回复失败');
+
+    }
+
+    /**
+     * 文章或者图片点赞或者取消赞
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function LikeGo(Request $request)
+    {
+        htmlHead();
+        $userid = 2;
+        $options = $this->likeCountRepository->LikeCountRequest($request);
+        $options['user_id'] = $userid;
+        //判断参数是否正确
+        if (0 == $options['article_id'] || 0 == $options['comment_id']) {
+            return response_failed('参数错误');
+        }
+        //判断是评论点赞还是回复点赞
+        if (0 == $options['reply_id']) {
+            $findRes = $this->commentRepository
+                ->where(['id' => $options['comment_id']])
+                ->first();
+        } else {
+            $findRes = $this->replyRepository
+                ->where(['comment_id' => $options['comment_id'],'id' => $options['reply_id']])
+                ->first();
+        }
+        //如果查询不到，则返回错误
+        if (!$findRes) {
+            return response_failed('数据有误');
+        }
+        //修改评论或者回复的点赞数量
+        //如果$options['like'] == 0 则认为是取消点赞
+        if (0 == $options['like']) {
+            if (0 == $options['reply_id']) {
+                $likeRes = $this->commentRepository
+                    ->where(['id' => $options['comment_id']])
+                    ->update(['likecount' => $findRes['likecount'] - 1]);
+            } else {
+                $likeRes = $this->commentRepository
+                    ->where(['id' => $options['reply_id']])
+                    ->update(['likecount' => $findRes['likecount'] - 1]);
+            }
+            if (!$likeRes) {
+                return response_failed('取消赞失败!');
+            }
+            //如果修改成功，则点赞表中数量删除一条数量
+            $likeDel = $this->likeCountRepository
+                ->where(['id' => $options['id'],'user_id' => $userid])
+                ->delete();
+            if (!$likeDel) {
+                return response_failed('取消赞失败');
+            }
+            return response_success(['message' => '取消赞成功']);
+
+        } else {
+            if (0 == $options['reply_id']) {
+                $likeRes = $this->commentRepository
+                    ->where(['id' => $options['comment_id']])
+                    ->update(['likecount' => $findRes['likecount'] + 1]);
+            } else {
+                $likeRes = $this->commentRepository
+                    ->where(['id' => $options['reply_id']])
+                    ->update(['likecount' => $findRes['likecount'] + 1]);
+            }
+            if (!$likeRes) {
+                return response_failed('点赞失败!');
+            }
+            //如果修改成功，则点赞表中数量增加一条数量
+            $likeAdd = $this->likeCountRepository
+                ->create($options);
+            if (!$likeAdd) {
+                return response_failed('点赞失败');
+            }
+            return response_success(['message' => '点赞成功']);
+        }
 
     }
 }
