@@ -199,6 +199,12 @@ class CommentController extends BaseController
             return response_failed('删除失败');
         }
         //删除评论下方的所有回复
+        $delRepFind = $this->replyRepository
+            ->where(['comment_id' => $id])
+            ->first();
+        if(!$delRepFind) {
+            return response_success(['message' => '删除成功']);
+        }
         $delRep = $this->replyRepository
             ->where(['comment_id' => $id])
             ->delete();
