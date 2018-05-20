@@ -189,7 +189,7 @@ class CommentController extends BaseController
         //查找是否存在此条评论
         $findCom = $this->commentRepository
             ->where(['user_id' => $userid,'cate' => $cate,'id' => $id])
-            ->frist();
+            ->first();
         if(!$findCom) {
             return response_failed('数据有误');
         }
@@ -226,7 +226,7 @@ class CommentController extends BaseController
         //查询是否存在这条评论
         $findCom = $this->commentRepository
             ->where(['id' => $options['comment_id']])
-            ->frist();
+            ->first();
         if (!$findCom) {
             return response_failed('数据有误');
         }
@@ -257,7 +257,7 @@ class CommentController extends BaseController
         //查询是否存在这条评论
         $findRep = $this->commentRepository
             ->where(['id' => $options['pid'],'comment_id' => $options['comment_id']])
-            ->frist();
+            ->first();
         if (!$findRep) {
             return response_failed('数据有误');
         }
@@ -289,7 +289,7 @@ class CommentController extends BaseController
         //查询是否存在这条评论
         $findRep = $this->commentRepository
             ->where(['id' => $id,'user_id' => $userid])
-            ->frist();
+            ->first();
         if (!$findRep) {
             return response_failed('数据有误');
         }
