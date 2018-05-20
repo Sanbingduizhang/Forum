@@ -28,4 +28,9 @@ class Comment extends Model
         return $this->hasMany(Reply::class,'comment_id','id');
     }
 
+    public function LikeCount()
+    {
+        return $this->has(LikeCount::class,'comment_id','id');
+    }
+
 }
