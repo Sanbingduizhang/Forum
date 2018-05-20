@@ -85,6 +85,7 @@ class CommentController extends BaseController
 
             return response_success([]);
         }
+        $photoComment['cate'] = $cate;
         //去除分页多余信息
         $photoComment = unsetye($photoComment);
 
@@ -135,6 +136,7 @@ class CommentController extends BaseController
 
             return response_success([]);
         }
+        $replyDatas['cate'] = $cate;
 
         return response_success($replyDatas);
 
