@@ -159,7 +159,7 @@ if (!function_exists('uploadsImg')) {
         //判断文件是否上传成功
         if(!($request->hasFile('photo') && $request->file('photo'))){
 
-            return response_failed('Error in the process of uploading files or uploading');
+            return -3;  //Error in the process of uploading files or uploading
         }
         //获取上传文件
         $file = $request->file('photo');
