@@ -47,7 +47,7 @@ class PhotoController extends Controller
             }])
             ->withCount(['Photo'])
             ->with(['Photo' => function($p){
-                $p->select('id','cate_id','img_path','img_name')->limit(1);
+                $p->select('id','cate_id','img_path','img_name');
             }])
 //            ->select('id','pname','use_id')
             ->where(['status' => 1,'share' => 1,'del' => 0])
@@ -56,6 +56,12 @@ class PhotoController extends Controller
         if(!$findRes){
 
             return response_success([]);
+        }
+        //只显示第一张图片
+        foreach ($findRes['data'] as $k => $v) {
+            if (!empty($v['photo'])) {
+                $findRes['data'][$k]['photo'] = [0 => $v['photo'][0]];
+            }
         }
         $findRes = unsetye($findRes);
 
