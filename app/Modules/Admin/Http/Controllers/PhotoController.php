@@ -36,7 +36,7 @@ class PhotoController extends BaseController
                 $p->select('id','cate_id','img_path','img_name');
             }])
 //            ->select('id','pname','use_id')
-            ->where(['del' => 0,'use_id' => 1])
+            ->where(['del' => 0,'use_id' => 2])
             ->orderBy('created_at','desc')
             ->paginate(8)
             ->toArray();
@@ -72,7 +72,7 @@ class PhotoController extends BaseController
                 $u->select('id','name');
             }])
             ->select('id','cate_id','userid','img_path','img_name')
-            ->where(['cate_id' => $id,'userid' => 1])
+            ->where(['cate_id' => $id,'userid' => 2])
             ->paginate(12)->toArray();
         if(!$photoRes) {
             return response_success([]);
@@ -96,7 +96,7 @@ class PhotoController extends BaseController
         if(3 > mb_strlen($option['pname']) || 10 < mb_strlen($option['pname'])) {
             return response_failed('相册名称大于三个且小于10个');
         }
-        $option['use_id'] = 1;
+        $option['use_id'] = 2;
         $createRes = $this->photoCateRepository->create($option);
         if($createRes){
             return response_success(['message' => 'add successful']);    //添加成功
@@ -117,7 +117,7 @@ class PhotoController extends BaseController
         if('' == $option['pname']) {
             return response_failed('相册名称不能为空');              //相册名称不为空
         }
-        $findRes = $this->photoCateRepository->where(['id' => $id,'use_id' => 1,'del' => 0])->first();
+        $findRes = $this->photoCateRepository->where(['id' => $id,'use_id' => 2,'del' => 0])->first();
         if(!$findRes) {
             return response_failed('数据有误');
         }
@@ -138,7 +138,7 @@ class PhotoController extends BaseController
     {
         htmlHead();
         $id = (int)$id;
-        $findRes = $this->photoCateRepository->where(['id' => $id,'use_id' => 1,'del' => 0])->first();
+        $findRes = $this->photoCateRepository->where(['id' => $id,'use_id' => 2,'del' => 0])->first();
         if(!$findRes) {
             return response_failed('数据有误');
         }
