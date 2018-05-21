@@ -62,7 +62,7 @@ class PhotoController extends BaseController
     {
         htmlHead();
         $cateRes = $this->photoCateRepository
-            ->where(['id' => $id,'del' => 0])
+            ->where(['id' => $id,'status' => 1,'del' => 0])
             ->first();
         if(!$cateRes) {
             return response_failed('数据有误');
@@ -71,14 +71,23 @@ class PhotoController extends BaseController
             ->with(['User' => function($u){
                 $u->select('id','name');
             }])
-            ->select('id','cate_id','userid','img_path','img_name')
+            ->select('id','cate_id','userid','img_thumb','img_path','img_name','likecount','created_at')
             ->where(['cate_id' => $id,'userid' => 2])
-            ->paginate(12)->toArray();
-        if(!$photoRes) {
+            ->paginate(12)
+            ->toArray();
+        if(!$photoRes){
+
             return response_success([]);
         }
-        $photoRes = unsetye($photoRes);
-        return response_success($photoRes);
+        //把相册名称，对应作者信息放上去
+        $returnArray['res'] = unsetye($photoRes);
+        $returnArray['username'] = $cateRes->User->name;
+        $returnArray['userimg'] = $cateRes->User->img_path;
+        $returnArray['photoname'] = $cateRes->pname;
+        $returnArray['cate'] = 2;   //图片
+        $returnArray['phototime'] = $cateRes->toArray()['created_at'];
+
+        return response_success($returnArray);
     }
 
     /**
@@ -178,7 +187,7 @@ class PhotoController extends BaseController
         //如果上传成功就进行数据插入
         $photoSave = $this->photoRepository->create([
             'cate_id' => $id,
-            'userid' => 1,
+            'userid' => 2,
             'img_path' => $uploadRes['path'],
             'img_thumb' => $uploadRes['path'],
             'img_name' => $uploadRes['name'],
