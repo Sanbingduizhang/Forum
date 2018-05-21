@@ -85,6 +85,7 @@ class PhotoController extends BaseController
         $returnArray['userimg'] = $cateRes->User->img_path;
         $returnArray['photoname'] = $cateRes->pname;
         $returnArray['cate'] = 2;   //图片
+        $returnArray['photoid'] = $id;   //当前相册id
         $returnArray['phototime'] = $cateRes->toArray()['created_at'];
 
         return response_success($returnArray);
