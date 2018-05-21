@@ -166,17 +166,21 @@ class PhotoController extends BaseController
         //上传文件
         $uploadRes = uploadsImg($request,$arr);
         //判断结果
-        if(-1 == $uploadRes) {
+        if (-1 == $uploadRes) {
             return response_failed('Please upload the specified type of picture:jpg,png,jpeg,gif');
         }
-        if(-2 == $uploadRes) {
+        if (-2 == $uploadRes) {
             return response_failed('save is failed');
+        }
+        if (-3 == $uploadRes) {
+            return response_failed('Error in the process of uploading files or uploading');
         }
         //如果上传成功就进行数据插入
         $photoSave = $this->photoRepository->create([
             'cate_id' => $id,
             'userid' => 1,
             'img_path' => $uploadRes['path'],
+            'img_thumb' => $uploadRes['path'],
             'img_name' => $uploadRes['name'],
             'img_origin' => $uploadRes['originName'],
             'ext' => $uploadRes['ext'],
