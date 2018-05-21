@@ -44,4 +44,33 @@ class PhotoRepository extends BaseRepository
         return $options;
     }
 
+    /**
+     * 删除相册
+     * @param Request $request
+     * @return array
+     */
+    public function pDelRequest(Request $request)
+    {
+        $options = [
+            'pIdArr' => $request->get('pIdArr',''),
+            'pLength' => $request->get('pLength',''),
+        ];
+        return $options;
+    }
+
+    /**
+     * 删除图片
+     * @param Request $request
+     * @return array
+     */
+    public function pDetailDelRequest(Request $request)
+    {
+        $options = [
+          'cate' => (int)$request->get('cate',''),
+          'photoid' => (int)$request->get('photoid',''),
+          'imgIdArr' => $request->get('imgIdArr',''),
+        ];
+        return $options;
+    }
+
 }

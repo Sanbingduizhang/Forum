@@ -99,6 +99,7 @@ class PhotoController extends BaseController
     public function createPhoto(PhotoCateRequest $request)
     {
         htmlHead();
+        $option['use_id'] = 2;
         $option = $this->photoCateRepository->pNewCateRequest($request);
         if('' == $option['pname']) {
             return response_failed('相册名称不能为空');              //相册名称不为空
@@ -106,7 +107,15 @@ class PhotoController extends BaseController
         if(3 > mb_strlen($option['pname']) || 10 < mb_strlen($option['pname'])) {
             return response_failed('相册名称大于三个且小于10个');
         }
-        $option['use_id'] = 2;
+        //判断相册名称是否存在
+        $findRes = $this->photoCateRepository
+            ->where(['use_id' => $option['use_id'],'pname' => $option['pname']])
+            ->first();
+
+        if ($findRes) {
+            return response_failed('相册名称已经存在');
+        }
+        //不存在，则进行添加相册
         $createRes = $this->photoCateRepository->create($option);
         if($createRes){
             return response_success(['message' => 'add successful']);    //添加成功
@@ -144,19 +153,74 @@ class PhotoController extends BaseController
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function delPhoto($id)
+    public function delPhoto(Request $request)
     {
         htmlHead();
-        $id = (int)$id;
-        $findRes = $this->photoCateRepository->where(['id' => $id,'use_id' => 2,'del' => 0])->first();
-        if(!$findRes) {
-            return response_failed('数据有误');
+        $userid = 2;
+        $options = $this->photoRepository->pDelRequest($request);
+        if ('' == $options['pIdArr'] || '' == $options['pLength']) {
+            return response_failed('参数错误');
         }
+        if (!is_array($options['pIdArr'])) {
+            return response_failed('参数错误');
+        }
+        //查找是否存在本人相册
+        $findRes = $this->photoCateRepository
+            ->whereIn('id',$options['pIdArr'])
+            ->where(['use_id' => $userid,'del' => 0]);
+        //判断相册选择数量是否正确
+        if ($options['pLength'] != $findRes->count()) {
+            return response_failed('数据存在不符');
+        }
+        //删除相册
         $delRes = $findRes->delete();
-        if($delRes){
-            return response_success(['message' => 'del successful']);
+        if(!$delRes){
+            return response_failed('del failed');
         }
-        return response_failed('del failed');
+        //删除所有相册中的所有图片
+        $pDetailFindRes = $this->photoRepository
+            ->whereIn('cate_id',$options['pIdArr'])
+            ->where(['userid' => $userid]);
+        if (!$pDetailFindRes->count()) {
+            return response_success(['message' => 'del photo successful']);
+        }
+        //删除所有相册中的所有图片
+        $pDetail = $pDetailFindRes->delete();
+
+        if($pDetail){
+            return response_success(['message' => 'del photo and pDetail successful']);
+        }
+        return response_failed('del pDetail failed');
+    }
+
+    /**
+     * 图片的单个或者批量删除
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function delPDetail(Request $request)
+    {
+        htmlHead();
+        $userid = 2;
+        $options = $this->photoRepository->pDetailDelRequest($request);
+        if ('' == $options['photoid'] || '' == $options['imgIdArr']) {
+           return response_failed('参数错误');
+        }
+        if (!is_array($options['imgIdArr'])) {
+            return response_failed('参数错误');
+        }
+        $findRes = $this->photoCateRepository
+            ->where(['id' => $options['photoid'],'use_id' => $userid])
+            ->first();
+        if (!$findRes) {
+           return response_failed('数据有误');
+        }
+        $delRes = $this->photoRepository->destroy($options['imgIdArr']);
+        if ($delRes) {
+           return response_success(['message' => '删除成功']);
+        }
+        return response_failed('删除失败');
+
     }
 
     /**
