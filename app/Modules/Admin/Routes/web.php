@@ -31,6 +31,9 @@ Route::group(['prefix' => 'admin'], function () {
        Route::get('/pindex','PhotoController@iPhoto');
        Route::post('/pCreate','PhotoController@createPhoto');
        Route::post('/pUpdate/{id}','PhotoController@updatePhoto');
-       //Route::get('/pdel/{id}','PhotoController@delPhoto');              //暂不使用
+       //删除相册
+       Route::post('/pdel','PhotoController@delPhoto');              //暂不使用
+        //删除图片
+       Route::post('/delPDetail','PhotoController@delPDetail');
     });
 });
