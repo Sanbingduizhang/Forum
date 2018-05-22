@@ -249,12 +249,19 @@ class PhotoController extends BaseController
         if (-3 == $uploadRes) {
             return response_failed('Error in the process of uploading files or uploading');
         }
+        resizeImage(
+            "/photo/uploads/".$uploadRes['name'],
+            '960',
+            '640',
+            $uploadRes['name'],
+            $uploadRes['ext']
+        );
         //如果上传成功就进行数据插入
         $photoSave = $this->photoRepository->create([
             'cate_id' => $id,
             'userid' => 2,
             'img_path' => $uploadRes['path'],
-            'img_thumb' => $uploadRes['path'],
+            'img_thumb' => "http://photo.heijiang.top/uploads/small/".$uploadRes['name'],
             'img_name' => $uploadRes['name'],
             'img_origin' => $uploadRes['originName'],
             'ext' => $uploadRes['ext'],
