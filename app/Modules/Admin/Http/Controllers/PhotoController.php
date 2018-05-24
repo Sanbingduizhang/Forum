@@ -345,12 +345,12 @@ class PhotoController extends BaseController
         $imgComIds = array_column($imgComIds,'id');
         //删除回复
         $imgRepRes = $this->replyRepository
-            ->whereIn('comment_id',$imgComIds)
-            ->delete();
-        if($imgRepRes){
+            ->whereIn('comment_id',$imgComIds);
+        if(0 == $imgRepRes->count()){
             return true;
         }
-        return false;
+        $imgRepRes->delete();
+        return true;
     }
 
     ///////////////////////////////-------------公用上传部分-------------//////////////////////////////////
