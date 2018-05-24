@@ -160,10 +160,10 @@ class CommentController extends BaseController
         $options['user_id'] = $userid;
         //处理数据信息
         if (1 == $options['cate']) {
-            $findRes = $this->photoRepository
+            $findRes = $this->articleRepository
                 ->where(['id' => $options['article_id']])->first();
         } elseif(2 == $options['cate']) {
-            $findRes = $this->articleRepository
+            $findRes = $this->photoRepository
                 ->where(['id' => $options['article_id']])->first();
         } else {
             $findRes = [];
