@@ -17,6 +17,10 @@ Route::group(['prefix' => 'home'], function () {
     Route::get('/', function (){
         dd('这是home页面');
     });
+    //登陆注册功能
+    Route::post('/login','LoginController@login');
+    Route::get('/index','LoginController@index');
+
     Route::group(['prefix' => 'article'],function(){
         Route::get('/uindex/{id}', 'ArticleController@uindex');
         Route::get('/index/{id?}','ArticleController@index');

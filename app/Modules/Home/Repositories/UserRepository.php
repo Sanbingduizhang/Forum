@@ -25,8 +25,8 @@ class UserRepository extends BaseRepository
     public function UserinfoRequest(Request $request)
     {
         $options = [
-            'username' => $request->get('username'),
-            'pwd' => $request->get('password'),
+            'username' => $request->get('username',''),
+            'pwd' => $request->get('password',''),
         ];
         return $options;
     }
