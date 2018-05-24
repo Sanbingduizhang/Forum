@@ -249,6 +249,7 @@ class PhotoController extends BaseController
                 return response_failed('删除失败');
             }
         }
+        $imgNameRes = array_column($imgNameRes,'img_name');
         $delAll = $this->delAllCon($imgNameRes,$options['imgIdArr']);
         //删除对应图片下面的所有回复
         if ($delAll) {
@@ -324,8 +325,8 @@ class PhotoController extends BaseController
     {
         //删除服务器上面的图片
         foreach ($imgNameRes as $k => $v) {
-            unlink("/photo/uploads/" . $v['img_name']);
-            unlink("/photo/small/" . $v['img_name']);
+            unlink("/photo/uploads/" . $v);
+            unlink("/photo/small/" . $v);
         }
         //删除图片下面的评论
         $imgComres = $this->commentRepository
