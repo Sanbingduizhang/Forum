@@ -7,18 +7,26 @@ use App\Modules\Admin\Repositories\PhotoCateRepository;
 use App\Modules\Admin\Repositories\PhotoRepository;
 use App\Modules\Basic\Http\Controllers\BaseController;
 use App\Modules\Basic\Providers\ImgCompress;
+use App\Modules\Home\Repositories\CommentRepository;
+use App\Modules\Home\Repositories\ReplyRepository;
 use Illuminate\Http\Request;
 
 class PhotoController extends BaseController
 {
     protected $photoCateRepository;
     protected $photoRepository;
+    protected $commentRepository;
+    protected $replyRepository;
     public function __construct(
         PhotoCateRepository $photoCateRepository,
-        PhotoRepository $photoRepository)
+        PhotoRepository $photoRepository,
+        CommentRepository $commentRepository,
+        ReplyRepository $replyRepository)
     {
         $this->photoCateRepository = $photoCateRepository;
         $this->photoRepository = $photoRepository;
+        $this->commentRepository = $commentRepository;
+        $this->replyRepository = $replyRepository;
     }
     ///////////////////////////////-------------后台相册编辑部分-------------//////////////////////////////////
     /**
@@ -185,10 +193,21 @@ class PhotoController extends BaseController
         if (!$pDetailFindRes->count()) {
             return response_success(['message' => 'del photo successful']);
         }
+        //查找所有图片的id，所有图片的名称
+        $pDetailFindAll = $pDetailFindRes->select('id','img_name')->get()->toArray();
+        $pDetailFindids = array_column($pDetailFindAll,'id');
+        $pDetailFindimgs = array_column($pDetailFindAll,'img_name');
         //删除所有相册中的所有图片
         $pDetail = $pDetailFindRes->delete();
+        if(!$pDetailFindAll){
+            if(!$pDetail){
+                return response_failed('del pDetail failed');
+            }
+        }
 
-        if($pDetail){
+        $delAll = $this->delAllCon($pDetailFindimgs,$pDetailFindids);
+
+        if($delAll){
             return response_success(['message' => 'del photo and pDetail successful']);
         }
         return response_failed('del pDetail failed');
@@ -204,6 +223,7 @@ class PhotoController extends BaseController
         htmlHead();
         $userid = 2;
         $options = $this->photoRepository->pDetailDelRequest($request);
+//        var_dump($options);exit();
         if ('' == $options['photoid'] || '' == $options['imgIdArr']) {
            return response_failed('参数错误');
         }
@@ -216,8 +236,22 @@ class PhotoController extends BaseController
         if (!$findRes) {
            return response_failed('数据有误');
         }
+        //查找图片名称
+        $imgNameRes = $this->photoRepository
+            ->select('img_name')
+            ->where(['userid' => $userid])
+            ->whereIn('id',$options['imgIdArr'])
+            ->get()->toArray();
+        //删除图片
         $delRes = $this->photoRepository->destroy($options['imgIdArr']);
-        if ($delRes) {
+        if(!$imgNameRes){
+            if(!$delRes){
+                return response_failed('删除失败');
+            }
+        }
+        $delAll = $this->delAllCon($imgNameRes,$options['imgIdArr']);
+        //删除对应图片下面的所有回复
+        if ($delAll) {
            return response_success(['message' => '删除成功']);
         }
         return response_failed('删除失败');
@@ -280,6 +314,44 @@ class PhotoController extends BaseController
     }
     ///////////////////////////////-------------公用文章部分-------------//////////////////////////////////
 
+    /**
+     * 删除服务器图片，删除对应图片下方的所有评论，所有回复（支持批量删除）
+     * @param $imgNameRes array 图片名称
+     * @param $imgIdArr array   图片的id
+     * @return bool
+     */
+    public function delAllCon($imgNameRes,$imgIdArr)
+    {
+        //删除服务器上面的图片
+        foreach ($imgNameRes as $k => $v) {
+            unlink("/photo/uploads/" . $v['img_name']);
+            unlink("/photo/small/" . $v['img_name']);
+        }
+        //删除图片下面的评论
+        $imgComres = $this->commentRepository
+            ->whereIn('article_id',$imgIdArr);
+        if(0 == $imgComres->count()) {
+            return true;
+        }
+
+        //获取对应图片下方回复
+        $imgComIds = $imgComres->select('id')->get()->toArray();
+        //删除评论
+        $imgComres->delete();
+        if(!$imgComIds) {
+            return true;
+        }
+        //整合评论id
+        $imgComIds = array_column($imgComIds,'id');
+        //删除回复
+        $imgRepRes = $this->replyRepository
+            ->whereIn('comment_id',$imgComIds)
+            ->delete();
+        if($imgRepRes){
+            return true;
+        }
+        return false;
+    }
 
     ///////////////////////////////-------------公用上传部分-------------//////////////////////////////////
 }
