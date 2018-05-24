@@ -255,14 +255,14 @@ class PhotoController extends BaseController
             960,
             640,
             "/photo/small",
-            true
+            false
         );
         //如果上传成功就进行数据插入
         $photoSave = $this->photoRepository->create([
             'cate_id' => $id,
             'userid' => 2,
             'img_path' => $uploadRes['path'],
-            'img_thumb' => "http://photo.heijiang.top/uploads/small/".$thumbPaths['thumb_name'],
+            'img_thumb' => "http://photo.heijiang.top/small/".$thumbPaths['thumb_name'],
 //            'img_thumb' => $uploadRes['path'],
             'img_name' => $uploadRes['name'],
             'img_origin' => $uploadRes['originName'],
