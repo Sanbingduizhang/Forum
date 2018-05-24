@@ -188,64 +188,96 @@ if (!function_exists('uploadsImg')) {
         ];
     }
 }
+
 /**
- * 使用方法：
- * $im   //参数是图片的存方路径
- * $maxwidth //设置图片的最大宽度
- * $maxheight    //设置图片的最大高度
- * $name //图片的名称，随便取吧
- * $filetype //图片类型
+ * 制作缩略图
+ * @param $src_path string 原图路径
+ * @param $ext string 后缀
+ * @param $max_w int 画布的宽度
+ * @param $max_h int 画布的高度
+ * @param $foldername string 目标路径
+ * @param $flag bool 是否是等比缩略图  默认为false
  */
-if (!function_exists('resizeImage')) {
-    function resizeImage($im,$maxwidth,$maxheight,$name,$filetype)
+if (!function_exists('thumbImage')) {
+    function thumbImage($src_path,$ext,$max_w,$max_h,$foldername,$flag = true)
     {
-        $im=imagecreatefromjpeg($im);
-        $pic_width = imagesx($im);
-        $pic_height = imagesy($im);
-        if(($maxwidth && $pic_width > $maxwidth) || ($maxheight && $pic_height > $maxheight))
-        {
-            if($maxwidth && $pic_width>$maxwidth)
-            {
-                $widthratio = $maxwidth/$pic_width;
-                $resizewidth_tag = true;
-            }
-            if($maxheight && $pic_height>$maxheight)
-            {
-                $heightratio = $maxheight/$pic_height;
-                $resizeheight_tag = true;
-            }
-            if($resizewidth_tag && $resizeheight_tag)
-            {
-                if($widthratio<$heightratio)
-                    $ratio = $widthratio;
-                else
-                    $ratio = $heightratio;
-            }
-            if($resizewidth_tag && !$resizeheight_tag)
-                $ratio = $widthratio;
-            if($resizeheight_tag && !$resizewidth_tag)
-                $ratio = $heightratio;
-            $newwidth = $pic_width * $ratio;
-            $newheight = $pic_height * $ratio;
-            if(function_exists("imagecopyresampled"))
-            {
-                $newim = imagecreatetruecolor($newwidth,$newheight);//PHP系统函数
-                imagecopyresampled($newim,$im,0,0,0,0,$newwidth,$newheight,$pic_width,$pic_height);//PHP系统函数
-            }
-            else
-            {
-                $newim = imagecreate($newwidth,$newheight);
-                imagecopyresized($newim,$im,0,0,0,0,$newwidth,$newheight,$pic_width,$pic_height);
-            }
-            $name = $name.$filetype;
-            imagejpeg($newim,$name);
-            imagedestroy($newim);
-        } else {
-            $name = $name.$filetype;
-            imagejpeg($im,$name);
+        //获取文件的后缀
+//        $ext=  strtolower(strrchr($src_path,'.'));
+        //判断文件格式
+        switch($ext){
+            case 'jpg':
+                $type='jpeg';
+                break;
+            case 'gif':
+                $type='gif';
+                break;
+            case 'png':
+                $type='png';
+                break;
+            default:
+                $this->error='文件格式不正确';
+                return false;
         }
-        copy($name,"/photo/uploads/small".$name); //拷贝到新目录
-        unlink($name); //删除旧目录下的文件
+
+        //拼接打开图片的函数
+        $open_fn = 'imagecreatefrom'.$type;
+        //打开源图
+        $src = $open_fn($src_path);
+        //创建目标图
+        $dst = imagecreatetruecolor($max_w,$max_h);
+
+        //源图的宽
+        $src_w = imagesx($src);
+        //源图的高
+        $src_h = imagesy($src);
+
+        //是否等比缩放
+        if ($flag) { //等比
+
+            //求目标图片的宽高
+            if ($max_w/$max_h < $src_w/$src_h) {
+
+                //横屏图片以宽为标准
+                $dst_w = $max_w;
+                $dst_h = $max_w * $src_h/$src_w;
+            }else{
+
+                //竖屏图片以高为标准
+                $dst_h = $max_h;
+                $dst_w = $max_h * $src_w/$src_h;
+            }
+            //在目标图上显示的位置
+            $dst_x=(int)(($max_w-$dst_w)/2);
+            $dst_y=(int)(($max_h-$dst_h)/2);
+        }else{    //不等比
+
+            $dst_x=0;
+            $dst_y=0;
+            $dst_w=$max_w;
+            $dst_h=$max_h;
+        }
+
+        //生成缩略图
+        imagecopyresampled($dst,$src,$dst_x,$dst_y,0,0,$dst_w,$dst_h,$src_w,$src_h);
+
+        //文件名
+        $filename = basename($src_path);
+        //文件夹名
+//        $foldername=substr(dirname($src_path),0);
+        //缩略图存放路径
+        $thumb_path = $foldername.'/'.$filename;
+
+        //把缩略图上传到指定的文件夹
+        imagepng($dst,$thumb_path);
+        //销毁图片资源
+        imagedestroy($dst);
+        imagedestroy($src);
+
+        //返回新的缩略图的文件名
+        return [
+            'thumb_path' => $thumb_path,
+            'thumb_name' => $filename,
+        ];
     }
 
 }
