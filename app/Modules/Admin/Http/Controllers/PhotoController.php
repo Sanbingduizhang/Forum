@@ -6,6 +6,7 @@ use App\Modules\Admin\Http\Requests\PhotoCateRequest;
 use App\Modules\Admin\Repositories\PhotoCateRepository;
 use App\Modules\Admin\Repositories\PhotoRepository;
 use App\Modules\Basic\Http\Controllers\BaseController;
+use App\Modules\Basic\Providers\ImgCompress;
 use Illuminate\Http\Request;
 
 class PhotoController extends BaseController
@@ -249,20 +250,22 @@ class PhotoController extends BaseController
         if (-3 == $uploadRes) {
             return response_failed('Error in the process of uploading files or uploading');
         }
-        $thumbPaths = thumbImage(
-            "/photo/uploads/".$uploadRes['name'],
-            $uploadRes['ext'],
-            960,
-            640,
-            "/photo/small",
-            false
-        );
+        //进行图片压缩
+        image_size_add("/photo/uploads/".$uploadRes['name'],"/photo/small/".$uploadRes['name']);
+//        $thumbPaths = thumbImage(
+//            "/photo/uploads/".$uploadRes['name'],
+//            $uploadRes['ext'],
+//            960,
+//            640,
+//            "/photo/small",
+//            false
+//        );
         //如果上传成功就进行数据插入
         $photoSave = $this->photoRepository->create([
             'cate_id' => $id,
             'userid' => 2,
             'img_path' => $uploadRes['path'],
-            'img_thumb' => "http://photo.heijiang.top/small/".$thumbPaths['thumb_name'],
+            'img_thumb' => "http://photo.heijiang.top/small/".$uploadRes['name'],
 //            'img_thumb' => $uploadRes['path'],
             'img_name' => $uploadRes['name'],
             'img_origin' => $uploadRes['originName'],
