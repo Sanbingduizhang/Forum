@@ -55,9 +55,10 @@ class LoginController extends BaseController
         ]);
         if($cacheSave){
             //存储token
-            $this->setMem($findRes->id,$tokenbefore,0,7200);
+            $this->setMem($tokenbefore,['uid' => $findRes->id,'name' => $findRes->name],0,7200);
+//            session_set_cookie_params(20);
             session_start();
-            $_SESSION['uid']=$findRes->id;
+            $_SESSION[$tokenbefore]=$findRes->id . '+' . $time[1];
             $this->uid = $findRes->id;
             $this->uname = $findRes->name;
             return response_success(['token' => $tokenbefore]);
@@ -66,18 +67,68 @@ class LoginController extends BaseController
 
     }
 
-    public function loginOut()
+    /**
+     * 用户退出操作
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function loginOut(Request $request)
     {
-
+//        dd(111);
+        //传递token，进行判断
+        $token = $request->get('token');
+        $tokenRes = $this->getMem($token);
+        //如果缓存获取不到token，则代表已经退出登陆
+        $findRes = $this->userRepository
+            ->where(['token' => $token,'status' => 1])
+            ->first();
+        if (!$tokenRes && !$findRes){
+            return response_success(['message' => '请您登录后重试']);
+        }
+        if(!$findRes)
+        {
+            return response_success(['message' => '您未曾登陆']);
+        }
+        //清除缓存，
+        $this->delMem($token);
+        //修改状态
+        $findRes->status = -1;
+        $upRes = $findRes->save();
+        if($upRes){
+            return response_success(['message' => '退出成功']);
+        }
+        return response_failed('退出失败');
     }
     /**
-     *
+     * 状态更改
+     * @param $token
+     * @param $tokenRes
+     * @return int
      */
-    public function index()
+    public function loginStatus($param)
     {
-        session_start();
-        $res = $this->getMem(2);
-        var_dump($_SESSION['uid']);
-        dd($res);
+        $mem = new \Memcache();
+        $mem->connect('127.0.0.1',11211);
+        $memRes = $mem->get($param);
+        $findRes = $this->cacheRepository
+            ->where(['token' => $param,'status' => 1])
+            ->first();
+        if (!$memRes && !$findRes){
+            return response_success(['message' => '请您登录后重试']);;  //请您登录后重试;
+        }
+        if(!$findRes)
+        {
+            return response_success(['message' => '您未曾登陆']);      //您未曾登陆']);
+        }
+        //清除缓存，
+        $this->delMem($param);
+        //修改状态
+        $findRes->status = -1;
+        $upRes = $findRes->save();
+        if($upRes){
+            return response_success(['message' => '请重新登陆']);   //退出成功
+        } else {
+            return response_failed('退出失败');//退出失败
+        }
     }
 }

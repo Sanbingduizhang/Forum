@@ -19,38 +19,39 @@ Route::group(['prefix' => 'home'], function () {
     });
     //登陆注册功能
     Route::post('/login','LoginController@login');
-    Route::get('/index','LoginController@index');
+    Route::get('/loginOut','LoginController@loginOut');
+    Route::get('/loginStatus/param/{param}','LoginController@loginStatus');
 
+    //文章综合
     Route::group(['prefix' => 'article'],function(){
         Route::get('/uindex/{id}', 'ArticleController@uindex');
         Route::get('/index/{id?}','ArticleController@index');
         Route::get('/ushow/{id}', 'ArticleController@ushow');
         Route::get('/cate', 'ArticleController@cate');
-        Route::post('/create', 'ArticleController@create');
-        Route::post('/update/{id}', 'ArticleController@update');
-        Route::post('/del/{id}', 'ArticleController@del');
+        Route::post('/create', 'ArticleController@create')->middleware('checkauth');
+        Route::post('/update/{id}', 'ArticleController@update')->middleware('checkauth');
+        Route::post('/del/{id}', 'ArticleController@del')->middleware('checkauth');
     });
-    Route::group(['prefix' => 'photo'],function(){
 
-//        Route::options('/uploads', 'PhotoController@uploads');
-        Route::post('/uploads', 'PhotoController@uploads');
+    //图片综合
+    Route::group(['prefix' => 'photo'],function(){
+        Route::post('/uploads', 'PhotoController@uploads')->middleware('checkauth');
         Route::get('/index', 'PhotoController@index');
         Route::get('/show/{id}', 'PhotoController@show');
         Route::get('/showImg', 'PhotoController@showImg');
-        //评论综合
-//        Route::get('/imgComment', 'PhotoController@imgComment');
-//        Route::get('/imgReply', 'PhotoController@imgReply');
     });
+
+    //评论综合
     Route::group(['prefix' => 'comment'],function(){
-        //评论综合
+
         Route::get('/imgComment', 'CommentController@imgComment');
         Route::get('/imgReply', 'CommentController@imgReply');
         //评论操作
-        Route::post('/comAdd', 'CommentController@comAdd');
-        Route::get('/comDel/id/{id}/cate/{cate}', 'CommentController@comDel');
+        Route::post('/comAdd', 'CommentController@comAdd')->middleware('checkauth');
+        Route::get('/comDel/id/{id}/cate/{cate}', 'CommentController@comDel')->middleware('checkauth');
         //回复操作
-        Route::post('/comRepAdd', 'CommentController@comRepAdd');
-        Route::post('/repRepAdd', 'CommentController@repRepAdd');
-        Route::get('/repDel/id/{id}', 'CommentController@repDel');
+        Route::post('/comRepAdd', 'CommentController@comRepAdd')->middleware('checkauth');
+        Route::post('/repRepAdd', 'CommentController@repRepAdd')->middleware('checkauth');
+        Route::get('/repDel/id/{id}', 'CommentController@repDel')->middleware('checkauth');
     });
 });

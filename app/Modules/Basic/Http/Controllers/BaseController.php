@@ -3,6 +3,8 @@
 namespace App\Modules\Basic\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Admin\Repositories\CacheRepository;
+use App\Modules\Home\Repositories\UserRepository;
 use Illuminate\Support\Facades\Cookie;
 
 class BaseController extends Controller
@@ -11,11 +13,15 @@ class BaseController extends Controller
     protected $timestamp;
     protected $uid;
     protected $uname;
+    protected $userRepository;
+    protected $cacheRepository;
 
-    public function __construct()
+    public function __construct(UserRepository $userRepository,CacheRepository $cacheRepository)
     {
 //        $this->current_user();
         $this->timestamp = time();
+        $this->userRepository = $userRepository;
+        $this->cacheRepository = $cacheRepository;
     }
 
     /**

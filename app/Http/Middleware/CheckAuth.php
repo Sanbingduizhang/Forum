@@ -3,6 +3,8 @@
 namespace App\Http\Middleware;
 
 use App\Modules\Admin\Repositories\CacheRepository;
+use App\Modules\Basic\Http\Controllers\BaseController;
+use App\Modules\Home\Repositories\UserRepository;
 use Closure;
 
 class CheckAuth
@@ -18,36 +20,18 @@ class CheckAuth
      */
     public function handle($request, Closure $next)
     {
-        $tokenQ = $request->get('token',null);
-        $tokenH = session('token');
-        if($tokenQ != $tokenH) {
-            return response_failed('false');
-        }
-        $tokenH = explode('+',$tokenH);
-        if((time() - $tokenH[1]) > 18000) {
-            
-            return response_failed(['重新登陆']);
+        $tokenQ = $request->get('token',1);
+        $mem = new \Memcache();
+        $mem->connect('127.0.0.1',11211);
+        $token = $mem->get($tokenQ);
+        if(!$token){
+            return response_failed('请登陆');
         }
 
-//        $token = $request->get('token',null);
-//        if(empty($token)){
-//            return response_failed('failed');
-//        }
-//        $tokenRes = $this->cacheRepository->where([
-//            'token' => $token,
-//            'status' => 1,
-//        ])->first();
-//
-//        if(!$tokenRes){
-//            return response_failed('sub is failed');
-//        }
-//        $tokenResr = $tokenRes->toArray();
-//        if((time() - $tokenResr['time']) > 18000) {
-//            $tokenRes->status = -1;
-//            $tokenRes->save();
-//            return response_failed(['重新登陆']);
-//        }
-
-        return $next($request);
+        $tokenH = explode('+',$tokenQ);
+        if((time() - $tokenH[1]) < 7200) {
+            return $next($request);
+        }
+        return redirect()->action('LoginController@loginStatus',$tokenQ);
     }
 }
