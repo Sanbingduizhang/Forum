@@ -34,13 +34,20 @@ class LoginController extends BaseController
      */
     public function login(LoginRequest $loginRequest)
     {
+        htmlHead();
         $options = $this->userRepository->UserinfoRequest($loginRequest);
         if('' == $options['username'] || '' == $options['pwd']){
             return response_failed('请登陆');
         }
+        if(strlen($options['username']) < 3 || strlen($options['username']) > 16){
+            return response_failed("用户名需大于三位且小于16位");
+        }
+        if(strlen($options['pwd']) < 3 || strlen($options['pwd']) > 16){
+            return response_failed("密码需大于三位且小于16位");
+        }
         //验证是否存在此用户
         $findRes = $this->userRepository
-            ->where(['username' => $options['username'],'pwd' => $options['pwd']])
+            ->where(['username' => $options['username'],'pwd' => md5($options['pwd'])])
             ->first();
         if(!$findRes){
             return response_failed('用户不存在，请先注册');
@@ -74,6 +81,7 @@ class LoginController extends BaseController
      */
     public function loginOut(Request $request)
     {
+        htmlHead();
         //传递token，进行判断
         $token = $request->get('token');
         session_start();
