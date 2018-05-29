@@ -55,8 +55,8 @@ class LoginController extends BaseController
         ]);
         if($cacheSave){
             //存储token
-            $this->setMem($tokenbefore,['uid' => $findRes->id,'name' => $findRes->name],0,7200);
-//            session_set_cookie_params(20);
+//            $this->setMem($tokenbefore,['uid' => $findRes->id,'name' => $findRes->name],0,7200);
+            //使用session存储
             session_start();
             $_SESSION[$tokenbefore]=$findRes->id . '+' . $time[1];
             $this->uid = $findRes->id;
@@ -74,12 +74,14 @@ class LoginController extends BaseController
      */
     public function loginOut(Request $request)
     {
-//        dd(111);
         //传递token，进行判断
         $token = $request->get('token');
-        $tokenRes = $this->getMem($token);
+        session_start();
+        $tokenRes =isset($_SESSION[$token]) ? $_SESSION[$token] : '';
+        //暂不使用缓存
+//        $tokenRes = $this->getMem($token);
         //如果缓存获取不到token，则代表已经退出登陆
-        $findRes = $this->userRepository
+        $findRes = $this->cacheRepository
             ->where(['token' => $token,'status' => 1])
             ->first();
         if (!$tokenRes && !$findRes){
@@ -89,12 +91,15 @@ class LoginController extends BaseController
         {
             return response_success(['message' => '您未曾登陆']);
         }
-        //清除缓存，
-        $this->delMem($token);
+        //暂不使用清除缓存，
+//        $this->delMem($token);
         //修改状态
         $findRes->status = -1;
         $upRes = $findRes->save();
         if($upRes){
+            //清除session
+            unset($_SESSION[$token]);
+            session_destroy();
             return response_success(['message' => '退出成功']);
         }
         return response_failed('退出失败');
