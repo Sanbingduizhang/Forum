@@ -53,6 +53,8 @@ class HomeController extends BaseController
     public function index()
     {
         htmlHead();
+        header('Access-Control-Allow-Headers', 'Origin, Content-Type, Cookie, Accept, multipart/form-data, application/json');
+        header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, OPTIONS');
         //查询前六条分类
         $cates = $this->categoryRepository
                 ->select('id','name')
