@@ -110,8 +110,8 @@ class PhotoController extends BaseController
     public function createPhoto(PhotoCateRequest $request)
     {
         htmlHead();
-        $option['use_id'] = $request->get('uid'); //获取用户id
         $option = $this->photoCateRepository->pNewCateRequest($request);
+        $option['use_id'] = $request->get('uid'); //获取用户id
 //        $option['use_id'] = 2;
         if('' == $option['pname']) {
             return response_failed('相册名称不能为空');              //相册名称不为空
