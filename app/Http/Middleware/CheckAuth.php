@@ -20,6 +20,7 @@ class CheckAuth
      */
     public function handle($request, Closure $next)
     {
+        htmlHead();
         $tokenQ = $request->get('token',1);
         session_start();
         $token = isset($_SESSION[$tokenQ]) ? $_SESSION[$tokenQ] : '';

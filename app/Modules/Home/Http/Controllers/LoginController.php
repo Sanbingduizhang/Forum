@@ -35,7 +35,13 @@ class LoginController extends BaseController
     public function login(LoginRequest $loginRequest)
     {
         htmlHead();
+        session_start();
         $options = $this->userRepository->UserinfoRequest($loginRequest);
+        $tokenRes =isset($_SESSION[$options['session']]) ? $options['session'] : '';
+        if($tokenRes){
+            return response_failed('您已经成功登陆');
+        }
+
         if('' == $options['username'] || '' == $options['pwd']){
             return response_failed('请登陆');
         }
@@ -64,7 +70,7 @@ class LoginController extends BaseController
             //存储token
 //            $this->setMem($tokenbefore,['uid' => $findRes->id,'name' => $findRes->name],0,7200);
             //使用session存储
-            session_start();
+//            session_start();
             $_SESSION[$tokenbefore]=$findRes->id . '+' . $time[1];
             $this->uid = $findRes->id;
             $this->uname = $findRes->name;

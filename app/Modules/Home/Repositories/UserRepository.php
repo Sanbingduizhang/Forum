@@ -27,6 +27,7 @@ class UserRepository extends BaseRepository
         $options = [
             'username' => htmlspecialchars($request->get('username','')),
             'pwd' => htmlspecialchars($request->get('password','')),
+            'session' => htmlspecialchars($request->get('token','')),
         ];
         return $options;
     }
