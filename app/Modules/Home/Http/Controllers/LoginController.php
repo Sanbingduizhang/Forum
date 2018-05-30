@@ -120,13 +120,15 @@ class LoginController extends BaseController
      */
     public function loginStatus($param)
     {
-        $mem = new \Memcache();
-        $mem->connect('127.0.0.1',11211);
-        $memRes = $mem->get($param);
+//        $mem = new \Memcache();
+//        $mem->connect('127.0.0.1',11211);
+//        $memRes = $mem->get($param);
+        session_start();
+        $tokenRes =isset($_SESSION[$param]) ? $_SESSION[$param] : '';
         $findRes = $this->cacheRepository
             ->where(['token' => $param,'status' => 1])
             ->first();
-        if (!$memRes && !$findRes){
+        if (!$tokenRes && !$findRes){
             return response_success(['message' => '请您登录后重试']);;  //请您登录后重试;
         }
         if(!$findRes)
@@ -134,11 +136,14 @@ class LoginController extends BaseController
             return response_success(['message' => '您未曾登陆']);      //您未曾登陆']);
         }
         //清除缓存，
-        $this->delMem($param);
+//        $this->delMem($param);
         //修改状态
         $findRes->status = -1;
         $upRes = $findRes->save();
         if($upRes){
+            //清除session
+            unset($_SESSION[$param]);
+            session_destroy();
             return response_success(['message' => '请重新登陆']);   //退出成功
         } else {
             return response_failed('退出失败');//退出失败
