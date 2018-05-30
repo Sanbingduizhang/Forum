@@ -22,11 +22,9 @@ class CheckAuth
     {
         htmlHead();
         $tokenQ = $request->get('token',1);
-        session_start();
-        $token = isset($_SESSION[$tokenQ]) ? $_SESSION[$tokenQ] : '';
-//        $mem = new \Memcache();
-//        $mem->connect('127.0.0.1',11211);
-//        $token = $mem->get($tokenQ);
+        $mem = new \Memcache();
+        $mem->connect('127.0.0.1',11211);
+        $token = $mem->get($tokenQ);
         if(!$token){
             return response_failed('请登陆');
         }
