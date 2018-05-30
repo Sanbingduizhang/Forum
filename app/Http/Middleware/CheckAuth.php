@@ -2,9 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Modules\Admin\Repositories\CacheRepository;
-use App\Modules\Basic\Http\Controllers\BaseController;
-use App\Modules\Home\Repositories\UserRepository;
 use Closure;
 
 class CheckAuth
@@ -31,6 +28,7 @@ class CheckAuth
 
         $tokenH = explode('+',$tokenQ);
         if((time() - $tokenH[1]) < 7200) {
+            $request->attributes->add($token);
             return $next($request);
         }
         return redirect()->action('LoginController@loginStatus',$tokenQ);

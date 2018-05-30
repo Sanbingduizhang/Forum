@@ -33,9 +33,10 @@ class PhotoController extends BaseController
      * 显示所有相册
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
         htmlHead();
+        $userid = $request->get('uid'); //获取用户id
         $findRes = $this->photoCateRepository
             ->with(['User' => function($u){
                 $u->select('id','name');
@@ -45,7 +46,7 @@ class PhotoController extends BaseController
                 $p->select('id','cate_id','img_path','img_name');
             }])
 //            ->select('id','pname','use_id')
-            ->where(['del' => 0,'use_id' => 2])
+            ->where(['del' => 0,'use_id' => $userid])
             ->orderBy('created_at','desc')
             ->paginate(8)
             ->toArray();
@@ -67,9 +68,10 @@ class PhotoController extends BaseController
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show($id)
+    public function show(Request $request,$id)
     {
         htmlHead();
+        $userid = $request->get('uid'); //获取用户id
         $cateRes = $this->photoCateRepository
             ->where(['id' => $id,'status' => 1,'del' => 0])
             ->first();
@@ -81,7 +83,7 @@ class PhotoController extends BaseController
                 $u->select('id','name');
             }])
             ->select('id','cate_id','userid','img_thumb','img_path','img_name','likecount','created_at')
-            ->where(['cate_id' => $id,'userid' => 2])
+            ->where(['cate_id' => $id,'userid' => $userid])
             ->paginate(12)
             ->toArray();
         if(!$photoRes){
@@ -108,8 +110,9 @@ class PhotoController extends BaseController
     public function createPhoto(PhotoCateRequest $request)
     {
         htmlHead();
+        $option['use_id'] = $request->get('uid'); //获取用户id
         $option = $this->photoCateRepository->pNewCateRequest($request);
-        $option['use_id'] = 2;
+//        $option['use_id'] = 2;
         if('' == $option['pname']) {
             return response_failed('相册名称不能为空');              //相册名称不为空
         }
@@ -141,11 +144,12 @@ class PhotoController extends BaseController
     public function updatePhoto(PhotoCateRequest $request,$id)
     {
         htmlHead();
+        $userid = $request->get('uid'); //获取用户id
         $option = $this->photoCateRepository->pNewCateRequest($request);
         if('' == $option['pname']) {
             return response_failed('相册名称不能为空');              //相册名称不为空
         }
-        $findRes = $this->photoCateRepository->where(['id' => $id,'use_id' => 2,'del' => 0])->first();
+        $findRes = $this->photoCateRepository->where(['id' => $id,'use_id' => $userid,'del' => 0])->first();
         if(!$findRes) {
             return response_failed('数据有误');
         }
@@ -165,7 +169,8 @@ class PhotoController extends BaseController
     public function delPhoto(Request $request)
     {
         htmlHead();
-        $userid = 2;
+        $userid = $request->get('uid'); //获取用户id
+//        $userid = 2;
         $options = $this->photoRepository->pDelRequest($request);
         if ('' == $options['pIdArr'] || '' == $options['pLength']) {
             return response_failed('参数错误');
@@ -221,7 +226,8 @@ class PhotoController extends BaseController
     public function delPDetail(Request $request)
     {
         htmlHead();
-        $userid = 2;
+        $userid = $request->get('uid'); //获取用户id
+//        $userid = 2;
         $options = $this->photoRepository->pDetailDelRequest($request);
 //        var_dump($options);exit();
         if ('' == $options['photoid'] || '' == $options['imgIdArr']) {
@@ -268,8 +274,9 @@ class PhotoController extends BaseController
     public function uploadImg(Request $request,$id)
     {
         htmlHead();
+        $userid = $request->get('uid'); //获取用户id
         $arr = ['jpg','png','jpeg','gif'];
-        $photoRes = $this->photoCateRepository->where(['id' => $id,'use_id' => 2,'del' => 0]);
+        $photoRes = $this->photoCateRepository->where(['id' => $id,'use_id' => $userid,'del' => 0]);
         if(!$photoRes){
             return response_failed('分类有错误');
         }
@@ -298,7 +305,7 @@ class PhotoController extends BaseController
         //如果上传成功就进行数据插入
         $photoSave = $this->photoRepository->create([
             'cate_id' => $id,
-            'userid' => 2,
+            'userid' => $userid,
             'img_path' => $uploadRes['path'],
             'img_thumb' => "http://photo.heijiang.top/small/".$uploadRes['name'],
 //            'img_thumb' => $uploadRes['path'],

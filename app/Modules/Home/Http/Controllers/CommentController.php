@@ -152,7 +152,8 @@ class CommentController extends BaseController
     public function comAdd(Request $request)
     {
         htmlHead();
-        $userid = 2;    //获取用户的id，暂时写定
+        $userid = $request->get('uid'); //获取用户id
+        //$userid = 2;    //获取用户的id，暂时写定
         $options = $this->commentRepository->addComRequest($request);
         if ('' == trim($options['content']) || '' == $options['article_id'] || '' == $options['cate']) {
             return response_failed('参数传递错误');
@@ -186,10 +187,11 @@ class CommentController extends BaseController
      * @param $cate
      * @return \Illuminate\Http\JsonResponse
      */
-    public function comDel($id,$cate)
+    public function comDel(Request $request,$id,$cate)
     {
         htmlHead();
-        $userid = 2;
+        $userid = $request->get('uid'); //获取用户id
+//        $userid = 2;
         //查找是否存在此条评论
         $findCom = $this->commentRepository
             ->where(['user_id' => $userid,'cate' => $cate,'id' => $id])
@@ -226,7 +228,8 @@ class CommentController extends BaseController
     public function comRepAdd(Request $request)
     {
         htmlHead();
-        $userid = 2;
+        $userid = $request->get('uid'); //获取用户id
+//        $userid = 2;
         $options = $this->replyRepository->addComRepRequest($request);
         if('' == $options['content'] || '' == $options['comment_id']) {
 
@@ -257,7 +260,8 @@ class CommentController extends BaseController
     public function repRepAdd(Request $request)
     {
         htmlHead();
-        $userid = 2;
+        $userid = $request->get('uid'); //获取用户id
+//        $userid = 2;
         $options = $this->replyRepository->addRepRepRequest($request);
         if('' == $options['content'] || '' == $options['comment_id'] || 0 == $options['pid']) {
 
@@ -290,7 +294,8 @@ class CommentController extends BaseController
     public function repDel(Request $request,$id)
     {
         htmlHead();
-        $userid = 2;
+        $userid = $request->get('uid'); //获取用户id
+//        $userid = 2;
         $id = (int)$id;
         if(!isset($id) && empty($id)) {
 
@@ -320,7 +325,8 @@ class CommentController extends BaseController
     public function LikeGo(Request $request)
     {
         htmlHead();
-        $userid = 2;
+        $userid = $request->get('uid'); //获取用户id
+//        $userid = 2;
         $options = $this->likeCountRepository->LikeCountRequest($request);
         $options['user_id'] = $userid;
         //判断参数是否正确

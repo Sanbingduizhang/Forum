@@ -63,7 +63,11 @@ class LoginController extends BaseController
         ]);
         if($cacheSave){
             //存储token
-            $this->setMem($tokenbefore,['uid' => $findRes->id,'name' => $findRes->name],0,7200);
+            $this->setMem(
+                $tokenbefore,
+                ['uid' => $findRes->id,'name' => $findRes->name,'img_path' => $findRes->img_path],
+                0,
+                7200);
             $this->uid = $findRes->id;
             $this->uname = $findRes->name;
             return response_success(['token' => $tokenbefore]);
@@ -116,12 +120,10 @@ class LoginController extends BaseController
         $mem = new \Memcache();
         $mem->connect('127.0.0.1',11211);
         $memRes = $mem->get($param);
-        session_start();
-        $tokenRes =isset($_SESSION[$param]) ? $_SESSION[$param] : '';
         $findRes = $this->cacheRepository
             ->where(['token' => $param,'status' => 1])
             ->first();
-        if (!$tokenRes && !$findRes){
+        if (!$memRes && !$findRes){
             return response_success(['message' => '请您登录后重试']);;  //请您登录后重试;
         }
         if(!$findRes)
