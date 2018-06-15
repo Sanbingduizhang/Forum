@@ -14,6 +14,8 @@ class ArticleController extends BaseController
 {
     protected $articleRepository;
     protected $categoryRepository;
+    protected $uid;
+    protected $id;
     public function __construct(
 
         ArticleRepository $articleRepository,
@@ -158,10 +160,18 @@ class ArticleController extends BaseController
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function uindex($id)
+    public function uindex(Request $request,$id)
     {
         htmlHead();
+        //用来查询用户登陆或者未登陆是是否点赞
+        $tokenQ = $request->get('token',1);
+        $mem = new \Memcache();
+        $mem->connect('127.0.0.1',11211);
+        $uid = $mem->get($tokenQ)['uid'];
+        $this->uid = $uid ? $uid : 0;
         $id = (int)$id;
+
+        $this->id = $id;
         $findRes = $this->articleRepository->find($id);
         if(!$findRes) {
             return response_failed('not exists');
@@ -174,6 +184,9 @@ class ArticleController extends BaseController
             ->with(['Cates' => function ($c){
                 $c->select('id','name');
             }])
+            ->withCount((['LikeCount' => function ($l) {
+                $l->where(['cate' => 1,'article_id' => $this->id,'user_id' => $this->uid]);
+            }]))
             ->withCount(['Comment'])
             ->where('status','=',Article::STATUS_ARTICLE_YES)
             ->where('publish','=',Article::PUBLISH_ARTICLE_YES)
@@ -187,7 +200,7 @@ class ArticleController extends BaseController
                 $articleRes['created_at']
             );
             $articleRes['cate'] = $articleRes['cates']['id'];
-        $articleRes['content'] = file_get_contents($articleRes['content']);
+//        $articleRes['content'] = file_get_contents($articleRes['content']);
         return response_success($articleRes);
     }
 

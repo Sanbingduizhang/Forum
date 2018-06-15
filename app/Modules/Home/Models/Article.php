@@ -25,4 +25,8 @@ class Article extends Model
     {
         return $this->belongsTo(Category::class,'cate_id','id');
     }
+    public function LikeCount()
+    {
+        return $this->hasOne(LikeCount::class,'article_id','id');
+    }
 }
