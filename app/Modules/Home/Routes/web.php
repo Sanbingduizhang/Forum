@@ -57,6 +57,9 @@ Route::group(['prefix' => 'home'], function () {
 
     //点赞相关
     Route::group(['prefix' => 'like'],function(){
+        //文章或者图片下方的评论或者回复的点赞和取消赞
+        Route::post('/LikeChildGo', 'CommentController@LikeChildGo')->middleware('checkauth');
+        //文章或者图片的点赞和取消赞
         Route::post('/LikeGo', 'CommentController@LikeGo')->middleware('checkauth');
     });
 });

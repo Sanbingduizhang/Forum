@@ -318,11 +318,11 @@ class CommentController extends BaseController
     }
 
     /**
-     * 文章或者图片点赞或者取消赞
+     * 文章或者图片下方的评论或者回复的点赞或者取消赞
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function LikeGo(Request $request)
+    public function LikeChildGo(Request $request)
     {
         htmlHead();
         $userid = $request->get('uid'); //获取用户id
@@ -393,5 +393,50 @@ class CommentController extends BaseController
             return response_success(['message' => '点赞成功']);
         }
 
+    }
+
+    public function LikeGo(Request $request)
+    {
+        htmlHead();
+        //获取文章或者图片的id以及是否点赞
+        $options = $this->likeCountRepository->LikeCountParRequest($request);
+        //获取当前登陆的用户信息
+        $options['user_id'] = $request->get('uid');
+        //判断数据是否为空
+        if (0 == $options['article_id']) {
+            return response_failed('数据错误');
+        }
+        //查询对应的数据是否存在
+        if (1 == $options['cate']) {
+            $findRes = $this->articleRepository->where(['id' => $options['article_id']])->first();
+        } else {
+            $findRes = $this->photoRepository->where(['id' => $options['article_id']])->first();
+        }
+        if (!$findRes) {
+            return response_failed('数据不存在');
+        }
+        //数据填充
+        //如果id为0.则是点赞，否则是取消赞
+        if (0 == $options['id']) {
+            //相对应的文章或者而图片点赞数修改
+            $findRes->like = $findRes->like + 1;
+            $saveRes = $findRes->save();
+            if (!$saveRes) {
+                return response_failed('点赞失败');
+            }
+            //对应的点赞表中的数据修改
+            $saveLike = $this->likeCountRepository->create($options);
+        } else {
+            $findRes->like = $findRes->like - 1;
+            $saveRes = $findRes->save();
+            if (!$saveRes) {
+                return response_failed('点赞失败');
+            }
+            $saveLike = $this->likeCountRepository->find($options['id'])->delete();
+        }
+        if ($saveLike) {
+            return response_success(['message' => '操作成功']);
+        }
+        return response_failed('操作失败');
     }
 }

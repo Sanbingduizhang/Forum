@@ -16,7 +16,12 @@ class LikeCountRepository extends BaseRepository
     {
         return LikeCount::class;
     }
-    //获取评论回复添加的相关数据
+
+    /**
+     * 获取评论回复添加的相关数据
+     * @param Request $request
+     * @return array
+     */
     public function LikeCountRequest(Request $request)
     {
         $options = [
@@ -29,4 +34,21 @@ class LikeCountRepository extends BaseRepository
         ];
         return $options;
     }
+
+    /**
+     * 获取文章或者图片的信息
+     * @param Request $request
+     * @return array
+     */
+    public function LikeCountParRequest(Request $request)
+    {
+        $options = [
+            'id' => $request->get('id',0),              //点赞表的id
+            'article_id' => $request->get('arPh_id',0),      //文章或者图片的id
+            'cate' => $request->get('cate',1),                  //分类1-文章，2-图片
+            //'like' => $request->get('like',1),                  //0-取消赞，1-点赞
+        ];
+        return $options;
+    }
+
 }
