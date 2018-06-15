@@ -54,4 +54,9 @@ Route::group(['prefix' => 'home'], function () {
         Route::post('/repRepAdd', 'CommentController@repRepAdd')->middleware('checkauth');
         Route::get('/repDel/id/{id}', 'CommentController@repDel')->middleware('checkauth');
     });
+
+    //点赞相关
+    Route::group(['prefix' => 'like'],function(){
+        Route::post('/LikeGo', 'CommentController@LikeGo')->middleware('checkauth');
+    });
 });
