@@ -200,7 +200,7 @@ class ArticleController extends BaseController
                 $articleRes['created_at']
             );
             $articleRes['cate'] = $articleRes['cates']['id'];
-//        $articleRes['content'] = file_get_contents($articleRes['content']);
+        $articleRes['content'] = file_get_contents($articleRes['content']);
         return response_success($articleRes);
     }
 
