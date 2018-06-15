@@ -184,7 +184,7 @@ class ArticleController extends BaseController
             ->with(['Cates' => function ($c){
                 $c->select('id','name');
             }])
-            ->withCount((['LikeCount' => function ($l) {
+            ->with((['LikeCount' => function ($l) {
                 $l->where(['cate' => 1,'article_id' => $this->id,'user_id' => $this->uid]);
             }]))
             ->withCount(['Comment'])
