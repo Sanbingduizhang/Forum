@@ -40,7 +40,6 @@ class PhotoController extends Controller
      */
     public function index()
     {
-        htmlHead();
         $findRes = $this->photoCateRepository
             ->with(['User' => function($u){
                 $u->select('id','name');
@@ -75,7 +74,6 @@ class PhotoController extends Controller
      */
     public function show($id)
     {
-        htmlHead();
         $cateRes = $this->photoCateRepository
             ->where(['id' => $id,'status' => 1,'share' => 1,'del' => 0])
             ->first();
@@ -112,7 +110,6 @@ class PhotoController extends Controller
      */
     public function imgComment(Request $request)
     {
-        htmlHead();
         $photoId = $request->get('photoid',null);
         $imgId = $request->get('imgid',null);
         //是否是直接显示评论（或者显示所有评论）
@@ -167,7 +164,6 @@ class PhotoController extends Controller
      */
     public function imgReply(Request $request)
     {
-        htmlHead();
         $imgId = $request->get('imgid',null);
         $commentId = $request->get('commentid',null);
         $more = $request->get('more',false);
@@ -216,7 +212,6 @@ class PhotoController extends Controller
      */
     public function showImg(Request $request)
     {
-        htmlHead();
         $photoId = $request->get('photoid',null);
         $imgId = $request->get('imgid',null);
         if(empty($photoId) || empty($imgId)) {
@@ -261,7 +256,6 @@ class PhotoController extends Controller
      */
     public function uploads(Request $request,$id)
     {
-        htmlHead();
         return false;
 //        $arr = ['jpg','png','jpeg','gif'];
 //        $photoRes = $this->photoCateRepository->where(['id' => $id,'use_id']);

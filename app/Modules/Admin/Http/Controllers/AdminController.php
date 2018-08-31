@@ -32,7 +32,6 @@ class AdminController extends BaseController
      */
     public function index($cateId = '')
     {
-        htmlHead();
         //查询有没有cateId传进来
         //如果没有，则认为是跳转到这个页面
         //如果存在cateId则认为是在当前页面点击不同的分类
@@ -86,7 +85,6 @@ class AdminController extends BaseController
      */
     public function create(ArticleRequest $request)
     {
-        htmlHead();
         //获取数据
         $options = $this->articleRepository->articleAddRequest($request);
         $options['user_id'] = 2;

@@ -35,7 +35,6 @@ class PhotoController extends BaseController
      */
     public function index(Request $request)
     {
-        htmlHead();
         $userid = $request->get('uid'); //获取用户id
         $findRes = $this->photoCateRepository
             ->with(['User' => function($u){
@@ -70,7 +69,6 @@ class PhotoController extends BaseController
      */
     public function show(Request $request,$id)
     {
-        htmlHead();
         $userid = $request->get('uid'); //获取用户id
         $cateRes = $this->photoCateRepository
             ->where(['id' => $id,'status' => 1,'del' => 0])
@@ -109,7 +107,6 @@ class PhotoController extends BaseController
      */
     public function createPhoto(PhotoCateRequest $request)
     {
-        htmlHead();
         $option = $this->photoCateRepository->pNewCateRequest($request);
         $option['use_id'] = $request->get('uid'); //获取用户id
 //        $option['use_id'] = 2;
@@ -143,7 +140,6 @@ class PhotoController extends BaseController
      */
     public function updatePhoto(PhotoCateRequest $request,$id)
     {
-        htmlHead();
         $userid = $request->get('uid'); //获取用户id
         $option = $this->photoCateRepository->pNewCateRequest($request);
         if('' == $option['pname']) {
@@ -168,7 +164,6 @@ class PhotoController extends BaseController
      */
     public function delPhoto(Request $request)
     {
-        htmlHead();
         $userid = $request->get('uid'); //获取用户id
 //        $userid = 2;
         $options = $this->photoRepository->pDelRequest($request);
@@ -225,7 +220,6 @@ class PhotoController extends BaseController
      */
     public function delPDetail(Request $request)
     {
-        htmlHead();
         $userid = $request->get('uid'); //获取用户id
 //        $userid = 2;
         $options = $this->photoRepository->pDetailDelRequest($request);
@@ -273,7 +267,6 @@ class PhotoController extends BaseController
      */
     public function uploadImg(Request $request,$id)
     {
-        htmlHead();
         $userid = $request->get('uid'); //获取用户id
         $arr = ['jpg','png','jpeg','gif'];
         $photoRes = $this->photoCateRepository->where(['id' => $id,'use_id' => $userid,'del' => 0]);

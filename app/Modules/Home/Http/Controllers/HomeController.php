@@ -52,7 +52,6 @@ class HomeController extends BaseController
      */
     public function index()
     {
-        htmlHead();
         //查询前六条分类
         $cates = $this->categoryRepository
                 ->select('id','name')
@@ -92,7 +91,6 @@ class HomeController extends BaseController
      */
     public function show($id)
     {
-        htmlHead();
         //获取文章id并判断是否存在
         $id = (int)$id;
         $findRes = $this->articleRepository->find($id);

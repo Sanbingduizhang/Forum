@@ -34,7 +34,6 @@ class LoginController extends BaseController
      */
     public function login(LoginRequest $loginRequest)
     {
-        htmlHead();
         $options = $this->userRepository->UserinfoRequest($loginRequest);
 
         if('' == $options['username'] || '' == $options['pwd']){
@@ -83,7 +82,6 @@ class LoginController extends BaseController
      */
     public function loginOut(Request $request)
     {
-        htmlHead();
         //传递token，进行判断
         $token = $request->get('token');
         //暂不使用缓存

@@ -17,7 +17,6 @@ class CheckAuth
      */
     public function handle($request, Closure $next)
     {
-        htmlHead();
         $tokenQ = $request->get('token',1);
         $mem = new \Memcache();
         $mem->connect('127.0.0.1',11211);

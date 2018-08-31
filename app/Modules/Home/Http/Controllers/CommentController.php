@@ -41,7 +41,6 @@ class CommentController extends BaseController
      */
     public function imgComment(Request $request)
     {
-        htmlHead();
         $photoId = (int)$request->get('photoid',null);
         $imgId = (int)$request->get('imgid',null);
         $cate = (int)$request->get('cate',null);
@@ -102,7 +101,6 @@ class CommentController extends BaseController
      */
     public function imgReply(Request $request)
     {
-        htmlHead();
         $imgId = $request->get('imgid',null);
         $commentId = $request->get('commentid',null);
         $cate = $request->get('cate',null);
@@ -151,7 +149,6 @@ class CommentController extends BaseController
      */
     public function comAdd(Request $request)
     {
-        htmlHead();
         $userid = $request->get('uid'); //获取用户id
         //$userid = 2;    //获取用户的id，暂时写定
         $options = $this->commentRepository->addComRequest($request);
@@ -189,7 +186,6 @@ class CommentController extends BaseController
      */
     public function comDel(Request $request,$id,$cate)
     {
-        htmlHead();
         $userid = $request->get('uid'); //获取用户id
 //        $userid = 2;
         //查找是否存在此条评论
@@ -227,7 +223,6 @@ class CommentController extends BaseController
      */
     public function comRepAdd(Request $request)
     {
-        htmlHead();
         $userid = $request->get('uid'); //获取用户id
 //        $userid = 2;
         $options = $this->replyRepository->addComRepRequest($request);
@@ -259,7 +254,6 @@ class CommentController extends BaseController
      */
     public function repRepAdd(Request $request)
     {
-        htmlHead();
         $userid = $request->get('uid'); //获取用户id
 //        $userid = 2;
         $options = $this->replyRepository->addRepRepRequest($request);
@@ -293,7 +287,6 @@ class CommentController extends BaseController
      */
     public function repDel(Request $request,$id)
     {
-        htmlHead();
         $userid = $request->get('uid'); //获取用户id
 //        $userid = 2;
         $id = (int)$id;
@@ -324,7 +317,6 @@ class CommentController extends BaseController
      */
     public function LikeChildGo(Request $request)
     {
-        htmlHead();
         $userid = $request->get('uid'); //获取用户id
 //        $userid = 2;
         $options = $this->likeCountRepository->LikeCountRequest($request);
@@ -397,7 +389,6 @@ class CommentController extends BaseController
 
     public function LikeGo(Request $request)
     {
-        htmlHead();
         //获取文章或者图片的id以及是否点赞
         $options = $this->likeCountRepository->LikeCountParRequest($request);
         //获取当前登陆的用户信息

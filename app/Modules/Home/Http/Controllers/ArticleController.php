@@ -30,8 +30,8 @@ class ArticleController extends BaseController
      * 请求分类
      * @return \Illuminate\Http\JsonResponse
      */
-    public function cate(){
-        htmlHead();
+    public function cate()
+    {
         $cate = $this->categoryRepository
             ->select('id','name')
             ->get()->toArray();
@@ -75,7 +75,6 @@ class ArticleController extends BaseController
      */
     public function index(Request $request,$cateId = '')
     {
-        htmlHead();
         //查询有没有cateId传进来
         if($cateId){
             $cateId = (int)$cateId;
@@ -139,7 +138,6 @@ class ArticleController extends BaseController
      */
     public function ushow($id)
     {
-        htmlHead();
         $id = (int)$id;
         $articleRes = $this->articleRepository
             ->with(['Cates' => function ($c){
@@ -162,7 +160,6 @@ class ArticleController extends BaseController
      */
     public function uindex(Request $request,$id)
     {
-        htmlHead();
         //用来查询用户登陆或者未登陆是是否点赞
         $tokenQ = $request->get('token',1);
         $mem = new \Memcache();
@@ -211,7 +208,6 @@ class ArticleController extends BaseController
      */
     public function create(ArticleRequest $request)
     {
-        htmlHead();
         //获取数据
         $options = $this->articleRepository->articleAddRequest($request);
         $options['user_id'] = 2;
@@ -239,7 +235,6 @@ class ArticleController extends BaseController
      */
     public function update(ArticleRequest $request,$id)
     {
-        htmlHead();
         $id = (int)$id;
         $options = $this->articleRepository->articleUpdateRequest($request);
         //判断是否存在
@@ -263,7 +258,6 @@ class ArticleController extends BaseController
      */
     public function del($id)
     {
-        htmlHead();
         $id = (int)$id;
         //判断是否存在
         $idRes = $this->articleRepository->find($id);
